@@ -4,402 +4,439 @@
 <meta name="description" content="Portfolio de Jaqueline Barrionuevo: finanzas, datos y automatización con IA. Madrid.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a working spreadsheet as the hero (her daily tool), then case studies as "problema → solución → resultado" cards, a dated timeline, and contact. One bold moment: the aguayo stripe. */
+/* Layout: dark, single-theme. A live 3D globe linking La Paz and Madrid opens the page; below, glowing tilt cards for case studies, a counter strip, a tool marquee, a lit timeline and a large contact panel. Accents come from the aguayo palette. */
 :root {
-  --bg: #F4F6F3;
-  --surface: #FFFFFF;
-  --fg: #15201B;
-  --muted: #56635D;
-  --line: #D9DFDA;
-  --accent: #0E6A55;
-  --accent-soft: #E1F0EA;
-  --grid: #EEF2EF;
-  --a1: #B5174F; --a2: #E2711D; --a3: #1F7A3A; --a4: #1D3E73; --a5: #E9B10F;
-  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --body: "Public Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --radius: 10px;
+  color-scheme: dark;
+  --bg: #07090F;
+  --bg2: #0C1019;
+  --panel: rgba(255, 255, 255, 0.035);
+  --panel-solid: #111725;
+  --line: rgba(255, 255, 255, 0.09);
+  --fg: #EEF2F8;
+  --muted: #8E98AD;
+  --mint: #3CE0B0;
+  --magenta: #FF3D8B;
+  --orange: #FF8A3D;
+  --gold: #FFC93C;
+  --blue: #5B8CFF;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Instrument Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r: 18px;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0E1412; --surface: #151D1A; --fg: #E6ECE8; --muted: #9AA8A1; --line: #26322D;
-    --accent: #52C7A3; --accent-soft: #173029; --grid: #1A2420; color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0E1412; --surface: #151D1A; --fg: #E6ECE8; --muted: #9AA8A1; --line: #26322D;
-  --accent: #52C7A3; --accent-soft: #173029; --grid: #1A2420; color-scheme: dark;
-}
-
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
-body {
-  margin: 0; background: var(--bg); color: var(--fg);
-  font-family: var(--body); font-size: 16px; line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-a { color: var(--accent); }
-a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-.wrap {
-  max-width: 1080px; margin: 0 auto;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
-.aguayo {
-  height: 8px;
-  background: repeating-linear-gradient(90deg,
-    var(--a1) 0 28px, var(--a5) 28px 34px, var(--a4) 34px 58px, var(--a2) 58px 64px,
-    var(--a3) 64px 92px, var(--a5) 92px 98px, var(--a1) 98px 104px);
-}
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: var(--mint); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.aguayo { height: 4px; background: repeating-linear-gradient(90deg, var(--magenta) 0 36px, var(--gold) 36px 42px, var(--blue) 42px 72px, var(--orange) 72px 78px, var(--mint) 78px 112px, var(--gold) 112px 118px); }
 
-/* Header */
-header.top { border-bottom: 1px solid var(--line); background: var(--surface); }
-header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; flex-wrap: wrap; }
-.brand { font-family: var(--display); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; color: var(--fg); text-decoration: none; }
-nav.links { display: flex; gap: 20px; flex-wrap: wrap; }
-nav.links a { color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500; }
-nav.links a:hover { color: var(--fg); }
+/* Nav */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(7, 9, 15, 0.7); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--fg); font-family: var(--display); font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em; }
+.logo .mk { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-size: 0.78rem; background: conic-gradient(from 200deg, var(--magenta), var(--orange), var(--gold), var(--mint), var(--blue), var(--magenta)); color: #07090F; }
+.nav nav { display: flex; gap: 26px; }
+.nav nav a { color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500; transition: color .2s; }
+.nav nav a:hover { color: var(--fg); }
+.nav .cta-mini { font-weight: 600; font-size: 0.88rem; color: #07090F; background: var(--mint); padding: 8px 14px; border-radius: 999px; text-decoration: none; }
 
 /* Hero */
-.hero { padding-block: 56px 40px; }
-.hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+.hero { position: relative; overflow: hidden; padding-block: 72px 64px; }
+.hero::before { content: ""; position: absolute; inset: -20% -10% auto auto; width: 70vw; height: 70vw; max-width: 900px; max-height: 900px; background: radial-gradient(closest-side, rgba(60, 224, 176, 0.16), transparent 70%); pointer-events: none; }
+.hero::after { content: ""; position: absolute; inset: auto auto -30% -15%; width: 60vw; height: 60vw; max-width: 760px; max-height: 760px; background: radial-gradient(closest-side, rgba(255, 61, 139, 0.12), transparent 70%); pointer-events: none; }
+.hero .wrap { position: relative; z-index: 2; display: grid; grid-template-columns: 1.05fr 1fr; gap: 24px; align-items: center; min-height: 560px; }
 .hero .wrap > * { min-width: 0; }
-.eyebrow { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
-h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2.4rem, 5.4vw, 3.9rem); line-height: 1.02; letter-spacing: -0.03em; margin: 0 0 18px; text-wrap: balance; }
-.lede { font-size: 1.12rem; color: var(--muted); max-width: 34em; margin: 0 0 26px; }
-.lede strong { color: var(--fg); font-weight: 600; }
-.cta { display: flex; gap: 12px; flex-wrap: wrap; }
-.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; border: 1px solid var(--accent); cursor: pointer; font-family: var(--body); }
-.btn.primary { background: var(--accent); color: var(--surface); }
-.btn.ghost { background: transparent; color: var(--accent); }
-.meta { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 22px; font-size: 0.88rem; color: var(--muted); }
-.meta span::before { content: "·"; margin-right: 8px; color: var(--line); }
-.meta span:first-child::before { content: none; }
+.pill { display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); font-size: 0.85rem; color: var(--muted); margin-bottom: 26px; }
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgba(60, 224, 176, 0.18); animation: pulse 2.4s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(60, 224, 176, 0); } }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2.3rem, 5.6vw, 4.4rem); line-height: 1.02; letter-spacing: -0.035em; margin: 0 0 22px; text-wrap: balance; }
+h1 .grad { background: linear-gradient(100deg, var(--mint) 0%, var(--blue) 45%, var(--magenta) 80%, var(--orange) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; background-size: 200% 100%; animation: shift 8s ease-in-out infinite alternate; }
+@keyframes shift { to { background-position: 100% 0; } }
+.lede { font-size: 1.12rem; color: var(--muted); max-width: 32em; margin: 0 0 30px; }
+.lede b { color: var(--fg); font-weight: 600; }
+.ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn { position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 12px; font-weight: 600; font-size: 0.98rem; text-decoration: none; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+.btn.primary { background: var(--fg); color: #07090F; box-shadow: 0 10px 40px -10px rgba(60, 224, 176, 0.6); }
+.btn.primary:hover { transform: translateY(-2px); box-shadow: 0 16px 50px -10px rgba(60, 224, 176, 0.8); }
+.btn.ghost { color: var(--fg); border: 1px solid var(--line); background: var(--panel); }
+.btn.ghost:hover { border-color: rgba(255,255,255,.25); }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+.chips span { font-size: 0.82rem; color: var(--muted); padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px; }
 
-/* Spreadsheet hero */
-.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: 0 18px 40px -28px rgba(10, 40, 30, 0.35); }
-.sheet-bar { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
-.sheet-bar .file { color: var(--fg); font-weight: 500; }
-.dots { display: flex; gap: 5px; }
-.dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
-.fx { display: flex; gap: 0; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 0.8rem; }
-.fx .ref { padding: 8px 10px; border-right: 1px solid var(--line); color: var(--muted); min-width: 52px; text-align: center; }
-.fx .f { padding: 8px 10px; color: var(--fg); white-space: nowrap; overflow-x: auto; }
-.fx .f b { color: var(--accent); font-weight: 500; }
-.grid-scroll { overflow-x: auto; }
-table.cells { border-collapse: collapse; width: 100%; font-size: 0.88rem; font-variant-numeric: tabular-nums; }
-table.cells th, table.cells td { border: 1px solid var(--grid); padding: 9px 10px; text-align: left; vertical-align: top; }
-table.cells thead th { background: var(--grid); color: var(--muted); font-family: var(--mono); font-weight: 400; font-size: 0.72rem; text-align: center; padding: 4px; }
-table.cells td.rn { background: var(--grid); color: var(--muted); font-family: var(--mono); font-size: 0.72rem; text-align: center; width: 34px; padding: 9px 4px; }
-table.cells tr.head td { font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
-table.cells td.val { font-family: var(--mono); font-weight: 500; color: var(--accent); white-space: nowrap; }
-table.cells tr.active td.val { outline: 2px solid var(--accent); outline-offset: -2px; }
+.globe-box { position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 600px; justify-self: end; }
+#globe { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.globe-fallback { position: absolute; inset: 8%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(60,224,176,.35), rgba(91,140,255,.15) 45%, transparent 70%); border: 1px solid var(--line); }
+.tagcard { position: absolute; z-index: 3; padding: 10px 14px; border-radius: 12px; background: rgba(12, 16, 25, 0.78); border: 1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 0.8rem; white-space: nowrap; animation: float 6s ease-in-out infinite; }
+.tagcard b { display: block; font-family: var(--mono); font-weight: 500; font-size: 0.72rem; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.tagcard.t1 { bottom: 12%; left: 0; } .tagcard.t2 { top: 10%; right: 0; animation-delay: -3s; }
+.tagcard .c1 { color: var(--orange); } .tagcard .c2 { color: var(--mint); }
+@keyframes float { 50% { transform: translateY(-10px); } }
+
+/* Metrics strip */
+.metrics { border-block: 1px solid var(--line); background: var(--bg2); }
+.metrics .wrap { display: grid; grid-template-columns: repeat(5, 1fr); }
+.metric { padding: 30px 18px; border-left: 1px solid var(--line); min-width: 0; }
+.metric:first-child { border-left: 0; }
+.metric .n { font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.3rem); letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.metric:nth-child(1) .n { color: var(--mint); } .metric:nth-child(2) .n { color: var(--blue); } .metric:nth-child(3) .n { color: var(--gold); } .metric:nth-child(4) .n { color: var(--magenta); } .metric:nth-child(5) .n { color: var(--orange); }
+.metric .l { display: block; margin-top: 10px; font-size: 0.86rem; color: var(--muted); }
 
 /* Sections */
-section.block { padding-block: 64px; border-top: 1px solid var(--line); }
-.sec-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
-h2 { font-family: var(--display); font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 2.3rem); letter-spacing: -0.02em; line-height: 1.1; margin: 0; text-wrap: balance; }
-.sec-head p { margin: 6px 0 0; color: var(--muted); max-width: 36em; }
+section.block { padding-block: 96px; }
+.sec-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
+.kicker { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); margin: 0 0 12px; }
+h2 { font-family: var(--display); font-weight: 700; font-size: clamp(1.8rem, 3.8vw, 2.9rem); letter-spacing: -0.03em; line-height: 1.05; margin: 0; text-wrap: balance; }
+.sec-head p.sub { color: var(--muted); max-width: 34em; margin: 12px 0 0; }
 
-/* Filter */
-.filters { display: flex; gap: 8px; flex-wrap: wrap; }
-.chip-btn { font: 500 0.85rem var(--body); padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
-.chip-btn[aria-pressed="true"] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; padding: 5px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+.fbtn { font: 500 0.86rem var(--body); padding: 8px 14px; border-radius: 10px; border: 0; background: transparent; color: var(--muted); cursor: pointer; transition: background .2s, color .2s; }
+.fbtn[aria-pressed="true"] { background: var(--fg); color: #07090F; }
 
-/* Featured project */
-.feature { display: grid; grid-template-columns: 1.2fr 1fr; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
-.feature > * { min-width: 0; }
-.feature .txt { padding: 28px; }
-.feature .viz { background: var(--accent-soft); padding: 28px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
-.tag { display: inline-block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-h3 { font-family: var(--display); font-weight: 700; font-size: 1.3rem; letter-spacing: -0.01em; line-height: 1.2; margin: 0 0 6px; }
-.ctx { font-size: 0.85rem; color: var(--muted); margin: 0 0 14px; }
-.psr { display: grid; gap: 10px; margin: 0 0 16px; }
-.psr div { display: grid; grid-template-columns: 92px 1fr; gap: 10px; font-size: 0.94rem; }
-.psr dt, .psr .k { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding-top: 3px; }
-.psr p { margin: 0; }
-.stack { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.stack li { font-size: 0.76rem; padding: 3px 9px; border-radius: 6px; background: var(--grid); color: var(--fg); }
-.links-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 16px; font-weight: 600; font-size: 0.92rem; }
+/* Glow card */
+.glow { position: relative; border-radius: var(--r); background: var(--panel-solid); border: 1px solid var(--line); overflow: hidden; transform-style: preserve-3d; transition: transform .25s ease, border-color .25s; --mx: 50%; --my: 50%; }
+.glow::before { content: ""; position: absolute; inset: 0; background: radial-gradient(420px circle at var(--mx) var(--my), rgba(60, 224, 176, 0.12), transparent 60%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+.glow:hover { border-color: rgba(60, 224, 176, 0.35); }
+.glow:hover::before { opacity: 1; }
 
-/* Bracket viz for dataGol */
-.bracket { display: grid; gap: 8px; font-family: var(--mono); font-size: 0.8rem; }
-.bar { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 10px; }
-.bar .t { color: var(--fg); }
-.bar .b { height: 10px; border-radius: 5px; background: var(--accent); opacity: 0.85; }
-.viz .note { font-family: var(--body); font-size: 0.8rem; color: var(--muted); margin: 6px 0 0; }
+.feature { display: grid; grid-template-columns: 1.15fr 1fr; margin-bottom: 22px; }
+.feature > * { min-width: 0; position: relative; }
+.feature .txt { padding: 36px; }
+.feature .art { border-left: 1px solid var(--line); background: radial-gradient(circle at 70% 30%, rgba(91,140,255,.18), transparent 60%), radial-gradient(circle at 20% 80%, rgba(255,61,139,.14), transparent 55%); padding: 36px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.tag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.tag i { width: 7px; height: 7px; border-radius: 2px; display: block; }
+.tag.ia i { background: var(--mint); } .tag.dt i { background: var(--blue); } .tag.fn i { background: var(--gold); } .tag.ml i { background: var(--magenta); }
+h3 { font-family: var(--display); font-weight: 700; font-size: 1.22rem; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 6px; }
+.feature h3 { font-size: 1.6rem; }
+.ctx { font-size: 0.86rem; color: var(--muted); margin: 0 0 18px; }
+.rs { display: grid; gap: 12px; margin: 0 0 18px; }
+.rs div { display: grid; grid-template-columns: 84px 1fr; gap: 12px; }
+.rs .k { font-family: var(--mono); font-size: 0.7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: 4px; }
+.rs p { margin: 0; font-size: 0.95rem; color: #C9D1DF; }
+.stack { display: flex; gap: 6px; flex-wrap: wrap; list-style: none; margin: 0; padding: 0; }
+.stack li { font-size: 0.76rem; padding: 4px 10px; border-radius: 7px; border: 1px solid var(--line); color: #C9D1DF; background: rgba(255,255,255,.02); }
+.links-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+.links-row a { font-weight: 600; font-size: 0.92rem; text-decoration: none; padding: 10px 16px; border-radius: 10px; border: 1px solid rgba(60,224,176,.35); color: var(--mint); }
+.links-row a:first-child { background: var(--mint); color: #07090F; border-color: var(--mint); }
+.pipe { display: grid; gap: 12px; font-family: var(--mono); font-size: 0.82rem; }
+.pipe .row { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: center; }
+.pipe .bar { height: 10px; border-radius: 6px; background: linear-gradient(90deg, var(--blue), var(--magenta)); box-shadow: 0 0 20px rgba(255,61,139,.35); transform-origin: left; animation: grow 1.4s cubic-bezier(.2,.8,.2,1) both; }
+.pipe .row:nth-child(2) .bar { animation-delay: .15s; } .pipe .row:nth-child(3) .bar { animation-delay: .3s; } .pipe .row:nth-child(4) .bar { animation-delay: .45s; background: linear-gradient(90deg, var(--magenta), var(--gold)); }
+@keyframes grow { from { transform: scaleX(0.15); } }
+.art .note { font-size: 0.84rem; color: var(--muted); margin: 6px 0 0; }
 
-/* Cards */
-.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; min-width: 0; }
-.card .result { margin: 2px 0 14px; padding: 12px 14px; background: var(--accent-soft); border-radius: 8px; }
-.card .result .n { font-family: var(--display); font-weight: 800; font-size: 1.55rem; letter-spacing: -0.02em; color: var(--accent); line-height: 1.1; display: block; }
-.card .result .l { font-size: 0.82rem; color: var(--muted); }
-.card .psr div { grid-template-columns: 1fr; gap: 2px; }
-.card .stack { margin-top: auto; padding-top: 14px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.card { padding: 26px; display: flex; flex-direction: column; min-width: 0; }
+.card > * { position: relative; }
+.card .res { margin: 2px 0 18px; padding: 16px; border-radius: 12px; background: linear-gradient(135deg, rgba(60,224,176,.10), rgba(91,140,255,.06)); border: 1px solid rgba(60,224,176,.18); }
+.card .res .n { font-family: var(--display); font-weight: 700; font-size: 1.45rem; letter-spacing: -0.03em; line-height: 1.1; display: block; background: linear-gradient(90deg, var(--mint), var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.card .res .l { font-size: 0.84rem; color: var(--muted); }
+.card .rs div { grid-template-columns: 1fr; gap: 3px; }
+.card .stack { margin-top: auto; padding-top: 18px; }
 
-/* Skills */
-.skills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-.skills > div { min-width: 0; }
-.skills h4 { font-family: var(--mono); font-weight: 500; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); margin: 0 0 10px; }
-.skills ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.94rem; }
+/* Marquee */
+.marquee { overflow: hidden; border-block: 1px solid var(--line); background: var(--bg2); padding-block: 22px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+.track { display: flex; gap: 14px; width: max-content; animation: scroll 40s linear infinite; }
+.track span { font-family: var(--display); font-weight: 500; font-size: 1.05rem; color: var(--muted); padding: 10px 20px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
+.track span:nth-child(4n+1) { color: var(--mint); } .track span:nth-child(4n+3) { color: var(--fg); }
+@keyframes scroll { to { transform: translateX(-50%); } }
+
+.skills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 40px; }
+.skill { padding: 24px; min-width: 0; }
+.skill h4 { font-family: var(--mono); font-weight: 500; font-size: 0.76rem; letter-spacing: .1em; text-transform: uppercase; margin: 0 0 14px; }
+.skill:nth-child(1) h4 { color: var(--gold); } .skill:nth-child(2) h4 { color: var(--blue); } .skill:nth-child(3) h4 { color: var(--mint); } .skill:nth-child(4) h4 { color: var(--magenta); }
+.skill ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; color: #C9D1DF; font-size: 0.94rem; }
 
 /* Timeline */
-.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
-.timeline li { display: grid; grid-template-columns: 150px 1fr; gap: 24px; padding-block: 18px; border-bottom: 1px solid var(--line); }
-.timeline li > * { min-width: 0; }
-.timeline .when { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); padding-top: 3px; font-variant-numeric: tabular-nums; }
-.timeline h3 { font-size: 1.08rem; margin-bottom: 2px; }
-.timeline p { margin: 0; color: var(--muted); font-size: 0.94rem; }
+.tl { list-style: none; margin: 0; padding: 0 0 0 28px; position: relative; display: grid; gap: 14px; }
+.tl::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(var(--mint), var(--blue), var(--magenta), var(--orange)); border-radius: 2px; }
+.tl li { position: relative; padding: 20px 24px; display: grid; grid-template-columns: 140px 1fr; gap: 22px; }
+.tl li > * { min-width: 0; position: relative; }
+.tl li::after { content: ""; position: absolute; left: -28px; top: 28px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--mint); box-shadow: 0 0 14px rgba(60,224,176,.6); }
+.tl .when { font-family: var(--mono); font-size: 0.82rem; color: var(--mint); padding-top: 3px; font-variant-numeric: tabular-nums; }
+.tl h3 { font-size: 1.05rem; margin-bottom: 4px; }
+.tl p { margin: 0; color: var(--muted); font-size: 0.94rem; }
 
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-.two > div { min-width: 0; }
-.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.plain li strong { display: block; font-weight: 600; }
-.plain li span { color: var(--muted); font-size: 0.92rem; }
-.lang { display: grid; gap: 10px; }
-.lang div { display: grid; grid-template-columns: 110px 1fr 46px; gap: 12px; align-items: center; font-size: 0.94rem; }
-.meter { height: 6px; background: var(--grid); border-radius: 3px; overflow: hidden; }
-.meter i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.two > .glow { padding: 32px; min-width: 0; }
+.two h2 { font-size: clamp(1.4rem, 2.6vw, 1.9rem); margin-bottom: 24px; }
+.edu { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.edu b { display: block; font-weight: 600; }
+.edu span { color: var(--muted); font-size: 0.9rem; }
+.lang { display: grid; gap: 16px; }
+.lang .r { display: grid; grid-template-columns: 90px 1fr 54px; gap: 14px; align-items: center; font-size: 0.95rem; }
+.lang .m { height: 8px; border-radius: 4px; background: rgba(255,255,255,.06); overflow: hidden; }
+.lang .m i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--mint), var(--blue)); }
 .lang .lv { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); text-align: right; }
 
 /* Contact */
-.contact { background: var(--fg); color: var(--bg); border-radius: var(--radius); padding: 40px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: center; }
-.contact > * { min-width: 0; }
-.contact h2 { color: var(--bg); }
-.contact p { color: var(--bg); opacity: 0.78; margin: 10px 0 0; }
-.contact-list { display: grid; gap: 10px; }
-.contact-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border: 1px solid color-mix(in srgb, var(--bg) 25%, transparent); border-radius: 8px; }
-.contact-row a, .contact-row span.v { color: var(--bg); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; user-select: all; }
-.contact-row .k { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.7; display: block; }
-.copy { font: 600 0.8rem var(--body); background: var(--bg); color: var(--fg); border: 0; border-radius: 6px; padding: 6px 10px; cursor: pointer; flex: none; }
+.contact { position: relative; overflow: hidden; border-radius: 28px; padding: 64px 48px; border: 1px solid var(--line); background: radial-gradient(circle at 15% 20%, rgba(60,224,176,.22), transparent 45%), radial-gradient(circle at 90% 90%, rgba(255,61,139,.2), transparent 45%), var(--panel-solid); display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+.contact > * { min-width: 0; position: relative; }
+.contact h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
+.contact p { color: #C9D1DF; margin: 16px 0 0; max-width: 30em; }
+.clist { display: grid; gap: 10px; }
+.crow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 14px; background: rgba(7,9,15,.55); border: 1px solid var(--line); }
+.crow .k { display: block; font-family: var(--mono); font-size: 0.7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.crow .v, .crow a { color: var(--fg); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.crow .v { user-select: all; }
+.copy { flex: none; font: 600 0.8rem var(--body); padding: 7px 12px; border-radius: 8px; border: 0; background: var(--mint); color: #07090F; cursor: pointer; }
 
-footer { padding-block: 28px 40px; color: var(--muted); font-size: 0.85rem; }
+.cform { padding: 28px; border-radius: 20px; background: rgba(7,9,15,.6); border: 1px solid var(--line); display: grid; gap: 14px; }
+.cform h3 { font-size: 1.15rem; margin: 0 0 4px; }
+.frow { display: grid; gap: 6px; min-width: 0; }
+.frow.two-f { grid-template-columns: 1fr 1fr; gap: 12px; }
+.frow.two-f > div { display: grid; gap: 6px; min-width: 0; }
+.cform label { font-size: 0.82rem; color: var(--muted); font-weight: 500; }
+.cform .opt { opacity: .7; }
+.cform input, .cform select, .cform textarea { width: 100%; font: 400 0.95rem var(--body); color: var(--fg); background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; }
+.cform select option { background: var(--panel-solid); color: var(--fg); }
+.cform textarea { resize: vertical; min-height: 110px; }
+.cform input:focus, .cform select:focus, .cform textarea:focus { outline: none; border-color: var(--mint); box-shadow: 0 0 0 3px rgba(60,224,176,.15); }
+.cform [aria-invalid="true"] { border-color: var(--magenta); }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.sendb { justify-content: center; border: 0; font-family: var(--body); }
+.sendb[disabled] { opacity: .6; cursor: wait; }
+.fstatus { margin: 0; font-size: 0.9rem; min-height: 1.4em; }
+.fstatus.ok { color: var(--mint); } .fstatus.err { color: var(--orange); }
+@media (max-width: 600px) { .frow.two-f { grid-template-columns: 1fr; } .cform { padding: 20px; } }
+footer { padding-block: 36px 48px; color: var(--muted); font-size: 0.86rem; border-top: 1px solid var(--line); margin-top: 96px; }
 footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
-@media (max-width: 900px) {
-  .hero .wrap, .feature, .two, .contact { grid-template-columns: 1fr; }
+/* Reveal (transform only, content always visible) */
+.rv { transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+.rv.pre { transform: translateY(26px); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .rv.pre { transform: none; }
+}
+@media (max-width: 960px) {
+  .hero .wrap { grid-template-columns: 1fr; min-height: 0; }
+  .globe-box { justify-self: center; max-width: 440px; }
+  .feature, .two, .contact { grid-template-columns: 1fr; }
+  .feature .art { border-left: 0; border-top: 1px solid var(--line); }
   .cards { grid-template-columns: repeat(2, 1fr); }
   .skills { grid-template-columns: repeat(2, 1fr); }
+  .metrics .wrap { grid-template-columns: repeat(3, 1fr); }
+  .metric:nth-child(4) { border-left: 0; }
+  .metric:nth-child(n+4) { border-top: 1px solid var(--line); }
+  .nav nav { display: none; }
 }
 @media (max-width: 600px) {
-  .hero { padding-block: 36px 28px; }
+  .hero { padding-block: 44px 40px; }
   .cards, .skills { grid-template-columns: 1fr; }
-  .timeline li { grid-template-columns: 1fr; gap: 4px; }
-  .psr div { grid-template-columns: 1fr; gap: 2px; }
-  .contact { padding: 26px 20px; }
-  nav.links { gap: 14px; }
-  .bar { grid-template-columns: 90px 1fr; }
+  .metrics .wrap { grid-template-columns: repeat(2, 1fr); }
+  .metric:nth-child(odd) { border-left: 0; } .metric:nth-child(even) { border-left: 1px solid var(--line); }
+  .metric:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .metric:nth-child(5) { grid-column: 1 / -1; }
+  .feature .txt, .feature .art, .card, .skill, .two > .glow { padding: 22px; }
+  .rs div { grid-template-columns: 1fr; gap: 3px; }
+  .tl li { grid-template-columns: 1fr; gap: 4px; padding: 16px 18px; }
+  .contact { padding: 36px 22px; border-radius: 22px; }
+  .tagcard { font-size: 0.72rem; padding: 8px 10px; }
+  section.block { padding-block: 64px; }
+  .pipe .row { grid-template-columns: 96px 1fr; }
 }
 </style>
 </head><body>
 
 <div class="aguayo" aria-hidden="true"></div>
-<header class="top">
+<header class="nav">
   <div class="wrap">
-    <a class="brand" href="#inicio">Jaqueline Barrionuevo</a>
-    <nav class="links" aria-label="Secciones">
+    <a class="logo" href="#inicio"><span class="mk">JB</span>Jaqueline Barrionuevo</a>
+    <nav aria-label="Secciones">
       <a href="#proyectos">Proyectos</a>
       <a href="#herramientas">Herramientas</a>
       <a href="#trayectoria">Trayectoria</a>
-      <a href="#contacto">Contacto</a>
     </nav>
+    <a class="cta-mini" href="#contacto">Contactar</a>
   </div>
 </header>
 
 <main id="inicio">
   <section class="hero">
     <div class="wrap">
-      <div>
-        <p class="eyebrow">Finanzas · Datos · Automatización con IA</p>
-        <h1>Convierto procesos manuales en horas libres y dinero ahorrado.</h1>
-        <p class="lede">Soy <strong>Jaqueline Barrionuevo</strong>, profesional de finanzas y datos con <strong>más de 10 años de experiencia</strong> en Bolivia y España. Diseño soluciones con <strong>Excel, Power BI, AppSheet, Apps Script, Make e IA generativa</strong> que las empresas usan cada día.</p>
-        <div class="cta">
-          <a class="btn primary" href="#proyectos">Ver proyectos</a>
-          <a class="btn ghost" href="#contacto">Contactar</a>
+      <div class="rv">
+        <span class="pill"><span class="dot"></span>Disponible · Madrid, híbrido o remoto</span>
+        <h1>Automatizo procesos con <span class="grad">datos e IA</span> para que las empresas ganen tiempo y dinero.</h1>
+        <p class="lede">Soy <b>Jaqueline Barrionuevo</b>, profesional de finanzas y datos con <b>más de 10 años de experiencia</b> entre Bolivia y España. Diseño chatbots, dashboards y apps que ahorran horas de trabajo cada semana.</p>
+        <div class="ctas">
+          <a class="btn primary" href="#proyectos">Ver proyectos →</a>
+          <a class="btn ghost" href="#contacto">Hablemos</a>
         </div>
-        <div class="meta">
-          <span>Madrid, España</span>
-          <span>Permiso de trabajo</span>
-          <span>Inglés C1</span>
-        </div>
+        <div class="chips"><span>Doble máster UCLM</span><span>Inglés C1</span><span>Permiso de trabajo</span></div>
       </div>
-
-      <div class="sheet" role="figure" aria-label="Resumen de resultados en formato de hoja de cálculo">
-        <div class="sheet-bar">
-          <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-          <span class="file">resultados_jaqueline.xlsx</span>
-        </div>
-        <div class="fx">
-          <span class="ref">C3</span>
-          <span class="f"><b>=AHORRO</b>(proceso_manual; automatización + IA)</span>
-        </div>
-        <div class="grid-scroll">
-          <table class="cells">
-            <thead><tr><th></th><th>A</th><th>B</th><th>C</th></tr></thead>
-            <tbody>
-              <tr class="head"><td class="rn">1</td><td>Proceso</td><td>Cómo</td><td>Resultado</td></tr>
-              <tr><td class="rn">2</td><td>Reporte de ocupación</td><td>Excel + Power BI</td><td class="val">5 h / reporte</td></tr>
-              <tr class="active"><td class="rn">3</td><td>Cualificar clientes</td><td>Chatbots + API</td><td class="val">4 h de llamadas</td></tr>
-              <tr><td class="rn">4</td><td>Proveedores</td><td>Auditoría</td><td class="val">2.000 € / 3 meses</td></tr>
-              <tr><td class="rn">5</td><td>Equipo de ventas</td><td>Liderazgo</td><td class="val">12 → 120</td></tr>
-              <tr><td class="rn">6</td><td>Red de proveedores</td><td>Negociación</td><td class="val">4 → 15</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="globe-box" aria-label="Globo 3D que une La Paz y Madrid" role="img">
+        <div class="globe-fallback" aria-hidden="true"></div>
+        <canvas id="globe"></canvas>
+        <div class="tagcard t1"><b>Origen</b><span class="c1">La Paz, Bolivia</span></div>
+        <div class="tagcard t2"><b>Hoy</b><span class="c2">Madrid, España</span></div>
       </div>
     </div>
   </section>
 
-  <section class="block" id="proyectos" aria-labelledby="h-proyectos">
+  <div class="metrics" role="list" aria-label="Resultados">
     <div class="wrap">
-      <div class="sec-head">
+      <div class="metric" role="listitem"><span class="n" data-to="5" data-suf=" h">5 h</span><span class="l">ahorradas en cada reporte de ocupación</span></div>
+      <div class="metric" role="listitem"><span class="n" data-to="4" data-suf=" h">4 h</span><span class="l">de llamadas liberadas con chatbots</span></div>
+      <div class="metric" role="listitem"><span class="n" data-to="2000" data-suf=" €" data-sep="1">2.000 €</span><span class="l">ahorrados en proveedores en 3 meses</span></div>
+      <div class="metric" role="listitem"><span class="n" data-to="120" data-pre="12 → ">12 → 120</span><span class="l">consultoras en mi equipo de ventas</span></div>
+      <div class="metric" role="listitem"><span class="n" data-to="15" data-pre="4 → ">4 → 15</span><span class="l">proveedores internacionales</span></div>
+    </div>
+  </div>
+
+  <section class="block" id="proyectos" aria-labelledby="h-proy">
+    <div class="wrap">
+      <div class="sec-head rv">
         <div>
-          <h2 id="h-proyectos">Proyectos</h2>
-          <p>Cada proyecto con el problema que resolví, cómo lo hice y lo que consiguió.</p>
+          <p class="kicker">Casos reales</p>
+          <h2 id="h-proy">Proyectos con resultados medibles</h2>
+          <p class="sub">El reto, lo que construí y lo que consiguió.</p>
         </div>
         <div class="filters" role="group" aria-label="Filtrar proyectos">
-          <button class="chip-btn" type="button" id="f-todos" data-f="todos" aria-pressed="true">Todos</button>
-          <button class="chip-btn" type="button" id="f-ia" data-f="ia" aria-pressed="false">IA y automatización</button>
-          <button class="chip-btn" type="button" id="f-datos" data-f="datos" aria-pressed="false">Datos</button>
-          <button class="chip-btn" type="button" id="f-fin" data-f="fin" aria-pressed="false">Finanzas y operaciones</button>
+          <button class="fbtn" type="button" id="f-todos" data-f="todos" aria-pressed="true">Todos</button>
+          <button class="fbtn" type="button" id="f-ia" data-f="ia" aria-pressed="false">IA y automatización</button>
+          <button class="fbtn" type="button" id="f-datos" data-f="datos" aria-pressed="false">Datos</button>
+          <button class="fbtn" type="button" id="f-fin" data-f="fin" aria-pressed="false">Finanzas</button>
         </div>
       </div>
 
-      <article class="feature" data-cat="datos ia">
+      <article class="glow feature tilt rv" data-cat="datos ia">
         <div class="txt">
-          <span class="tag">Proyecto propio · Machine learning</span>
-          <h3>dataGol: predicción del Mundial 2026</h3>
+          <span class="tag ml"><i></i>Proyecto propio · Machine learning</span>
+          <h3>dataGol: quién ganará el Mundial 2026</h3>
           <p class="ctx">Aplicación pública en Streamlit · Python</p>
-          <dl class="psr">
-            <div><dt>Reto</dt><dd style="margin:0">Estimar qué selección ganará el Mundial a partir de datos históricos.</dd></div>
-            <div><dt>Solución</dt><dd style="margin:0">Modelo combinado de Regresión Logística, Random Forest y XGBoost con datos de ocho fuentes, y simulación Monte Carlo de todo el cuadro del torneo.</dd></div>
-            <div><dt>Resultado</dt><dd style="margin:0">En la prueba con los Mundiales de 2018 y 2022, el campeón real estuvo siempre entre los 5 favoritos del modelo.</dd></div>
-          </dl>
+          <div class="rs">
+            <div><span class="k">Reto</span><p>Estimar qué selección ganará el Mundial a partir de datos históricos.</p></div>
+            <div><span class="k">Solución</span><p>Modelo combinado de Regresión Logística, Random Forest y XGBoost con datos de ocho fuentes, y simulación Monte Carlo de todo el cuadro del torneo.</p></div>
+            <div><span class="k">Resultado</span><p>Probado con los Mundiales de 2018 y 2022: el campeón real estuvo siempre entre los 5 favoritos del modelo.</p></div>
+          </div>
           <ul class="stack"><li>Python</li><li>scikit-learn</li><li>XGBoost</li><li>Monte Carlo</li><li>Streamlit</li></ul>
           <div class="links-row">
-            <a href="https://datagol.streamlit.app" target="_blank" rel="noopener">Abrir la app ↗</a>
+            <a href="https://datagol.streamlit.app" target="_blank" rel="noopener">Probar la app ↗</a>
             <a href="https://github.com/jaquelineClaudia/dataGol" target="_blank" rel="noopener">Ver el código ↗</a>
           </div>
         </div>
-        <div class="viz" aria-hidden="true">
-          <span class="tag">Cómo funciona</span>
-          <div class="bracket">
-            <div class="bar"><span class="t">8 fuentes</span><span class="b" style="width:100%"></span></div>
-            <div class="bar"><span class="t">3 modelos</span><span class="b" style="width:72%"></span></div>
-            <div class="bar"><span class="t">Simulación</span><span class="b" style="width:56%"></span></div>
-            <div class="bar"><span class="t">Top 5</span><span class="b" style="width:30%"></span></div>
+        <div class="art" aria-hidden="true">
+          <span class="tag dt"><i></i>Cómo funciona</span>
+          <div class="pipe">
+            <div class="row"><span>8 fuentes</span><span class="bar" style="width:100%"></span></div>
+            <div class="row"><span>3 modelos</span><span class="bar" style="width:74%"></span></div>
+            <div class="row"><span>Simulación</span><span class="bar" style="width:52%"></span></div>
+            <div class="row"><span>Top 5</span><span class="bar" style="width:28%"></span></div>
           </div>
-          <p class="note">De los datos al ranking final de favoritas.</p>
+          <p class="note">De miles de datos a un ranking de favoritas.</p>
         </div>
       </article>
 
-      <div class="cards" id="cards">
-        <article class="card" data-cat="ia">
-          <span class="tag">IA y automatización</span>
+      <div class="cards">
+        <article class="glow card tilt rv" data-cat="ia">
+          <span class="tag ia"><i></i>IA y automatización</span>
           <h3>Chatbots que cualifican clientes</h3>
-          <p class="ctx">Alojamientos turísticos y de media estancia · Madrid · 2024–2026</p>
-          <div class="result"><span class="n">4 h</span><span class="l">de llamadas de cualificación liberadas</span></div>
-          <div class="psr">
-            <div><span class="k">Reto</span><p>El equipo dedicaba horas al teléfono para saber qué buscaba cada cliente.</p></div>
-            <div><span class="k">Solución</span><p>Chatbots de WhatsApp y web con la API de ChatGPT, conectados al ERP con Make. Clasifican cada consulta por tipo de cliente, presupuesto y fechas, y la envían al departamento correcto.</p></div>
+          <p class="ctx">Alojamientos turísticos · Madrid · 2024–2026</p>
+          <div class="res"><span class="n">4 h liberadas</span><span class="l">de llamadas de cualificación</span></div>
+          <div class="rs">
+            <div><span class="k">Reto</span><p>El equipo pasaba horas al teléfono para saber qué buscaba cada cliente.</p></div>
+            <div><span class="k">Solución</span><p>Chatbots de WhatsApp y web con la API de ChatGPT, conectados al ERP con Make, que clasifican cada consulta por tipo de cliente, presupuesto y fechas y la envían al departamento correcto.</p></div>
           </div>
-          <ul class="stack"><li>API de ChatGPT</li><li>Make</li><li>WhatsApp</li><li>JSON</li><li>ERP</li></ul>
+          <ul class="stack"><li>API de ChatGPT</li><li>Make</li><li>WhatsApp</li><li>JSON</li></ul>
         </article>
 
-        <article class="card" data-cat="datos fin">
-          <span class="tag">Datos</span>
+        <article class="glow card tilt rv" data-cat="datos fin">
+          <span class="tag dt"><i></i>Datos</span>
           <h3>Reporte de ocupación automático</h3>
           <p class="ctx">Más de 50 alojamientos · 2024–2026</p>
-          <div class="result"><span class="n">5 h</span><span class="l">ahorradas en cada reporte (media jornada)</span></div>
-          <div class="psr">
+          <div class="res"><span class="n">5 h por reporte</span><span class="l">media jornada ahorrada cada vez</span></div>
+          <div class="rs">
             <div><span class="k">Reto</span><p>El reporte de ocupación y los KPIs para dirección se montaban a mano.</p></div>
             <div><span class="k">Solución</span><p>Dashboards en Excel y Power BI que se actualizan solos con la ocupación y los indicadores financieros.</p></div>
           </div>
           <ul class="stack"><li>Excel</li><li>Power BI</li><li>Power Query</li></ul>
         </article>
 
-        <article class="card" data-cat="fin">
-          <span class="tag">Finanzas y operaciones</span>
+        <article class="glow card tilt rv" data-cat="fin">
+          <span class="tag fn"><i></i>Finanzas</span>
           <h3>Auditoría de proveedores</h3>
           <p class="ctx">Contratos y suministros · 2024–2026</p>
-          <div class="result"><span class="n">2.000 €</span><span class="l">ahorrados en 3 meses</span></div>
-          <div class="psr">
-            <div><span class="k">Reto</span><p>Se pagaban servicios que ya no se usaban, como líneas de internet de pisos que la empresa ya no gestionaba.</p></div>
+          <div class="res"><span class="n">2.000 € ahorrados</span><span class="l">en solo 3 meses</span></div>
+          <div class="rs">
+            <div><span class="k">Reto</span><p>Se pagaban servicios sin uso, como líneas de internet de pisos que la empresa ya no gestionaba.</p></div>
             <div><span class="k">Solución</span><p>Revisé todos los contratos, di de baja lo innecesario y renegocié tarifas para mejorar el servicio y bajar precios.</p></div>
           </div>
           <ul class="stack"><li>Excel</li><li>Análisis de costes</li><li>Negociación</li></ul>
         </article>
 
-        <article class="card" data-cat="ia">
-          <span class="tag">IA y automatización</span>
+        <article class="glow card tilt rv" data-cat="ia">
+          <span class="tag ia"><i></i>IA y automatización</span>
           <h3>App de gestión documental</h3>
           <p class="ctx">Documentación de clientes · 2024–2026</p>
-          <div class="result"><span class="n">Archivo automático</span><span class="l">cada documento se guarda solo en su carpeta</span></div>
-          <div class="psr">
-            <div><span class="k">Reto</span><p>Los documentos de clientes se pedían, descargaban y archivaban uno a uno en varios departamentos.</p></div>
+          <div class="res"><span class="n">Archivo automático</span><span class="l">cada documento va solo a su carpeta</span></div>
+          <div class="rs">
+            <div><span class="k">Reto</span><p>Los documentos de clientes se pedían, descargaban y archivaban uno a uno.</p></div>
             <div><span class="k">Solución</span><p>App en AppSheet con Apps Script que recibe los documentos, los archiva en Drive y los registra en Google Sheets, más un lector automático de PDF.</p></div>
           </div>
-          <ul class="stack"><li>AppSheet</li><li>Apps Script</li><li>Google Drive</li><li>Google Sheets</li></ul>
+          <ul class="stack"><li>AppSheet</li><li>Apps Script</li><li>Drive</li><li>Sheets</li></ul>
         </article>
 
-        <article class="card" data-cat="ia">
-          <span class="tag">IA y automatización</span>
+        <article class="glow card tilt rv" data-cat="ia">
+          <span class="tag ia"><i></i>IA y automatización</span>
           <h3>Tutor de IA para el equipo</h3>
           <p class="ctx">Formación interna · NotebookLM</p>
-          <div class="result"><span class="n">Manuales → tutor</span><span class="l">pódcasts, vídeos y respuestas al momento</span></div>
-          <div class="psr">
-            <div><span class="k">Reto</span><p>Las guías de la empresa eran largas y el equipo tardaba en encontrar respuestas.</p></div>
+          <div class="res"><span class="n">Manuales → tutor</span><span class="l">pódcasts, vídeos y respuestas al momento</span></div>
+          <div class="rs">
+            <div><span class="k">Reto</span><p>Las guías de la empresa eran largas y costaba encontrar respuestas.</p></div>
             <div><span class="k">Solución</span><p>Cargué los manuales en NotebookLM y creé un tutor de IA que responde dudas y genera pódcasts, vídeos y material de consulta.</p></div>
           </div>
           <ul class="stack"><li>NotebookLM</li><li>IA generativa</li></ul>
         </article>
 
-        <article class="card" data-cat="datos">
-          <span class="tag">Datos</span>
+        <article class="glow card tilt rv" data-cat="datos">
+          <span class="tag dt"><i></i>Datos</span>
           <h3>Dashboard de reputación online</h3>
           <p class="ctx">Airbnb · Booking · Google</p>
-          <div class="result"><span class="n">3 plataformas</span><span class="l">en un solo ranking de reseñas</span></div>
-          <div class="psr">
+          <div class="res"><span class="n">3 plataformas</span><span class="l">en un solo ranking de reseñas</span></div>
+          <div class="rs">
             <div><span class="k">Reto</span><p>Las reseñas estaban repartidas en varias plataformas y no se veía qué mejorar.</p></div>
             <div><span class="k">Solución</span><p>Dashboard que reúne puntuaciones y reseñas, ordena el ranking de alojamientos y señala los puntos a mejorar.</p></div>
           </div>
           <ul class="stack"><li>Excel</li><li>Power BI</li><li>Análisis de reseñas</li></ul>
         </article>
 
-        <article class="card" data-cat="ia datos">
-          <span class="tag">IA y automatización</span>
+        <article class="glow card tilt rv" data-cat="ia datos">
+          <span class="tag ia"><i></i>IA y automatización</span>
           <h3>CRM de ventas a medida</h3>
-          <p class="ctx">Empresa de salud y bienestar · Leganés · 2026</p>
-          <div class="result"><span class="n">2.000–3.000</span><span class="l">ventas en papel en proceso de digitalización</span></div>
-          <div class="psr">
-            <div><span class="k">Reto</span><p>Las ventas estaban en hojas de papel y el seguimiento a clientes dependía de la memoria.</p></div>
-            <div><span class="k">Solución</span><p>CRM en AppSheet con clientes, compras y visitas por código postal para planificar rutas, recordatorios postventa automáticos. En desarrollo: dashboard de ventas con Gemini.</p></div>
+          <p class="ctx">Salud y bienestar · Leganés · 2026</p>
+          <div class="res"><span class="n">2.000–3.000 ventas</span><span class="l">de papel a una app con seguimiento</span></div>
+          <div class="rs">
+            <div><span class="k">Reto</span><p>Las ventas estaban en hojas de papel y el seguimiento dependía de la memoria.</p></div>
+            <div><span class="k">Solución</span><p>CRM en AppSheet con clientes, compras y visitas por código postal y recordatorios postventa automáticos. En desarrollo: dashboard de ventas con Gemini.</p></div>
           </div>
-          <ul class="stack"><li>AppSheet</li><li>Apps Script</li><li>Google Sheets</li><li>Gemini</li></ul>
+          <ul class="stack"><li>AppSheet</li><li>Apps Script</li><li>Sheets</li><li>Gemini</li></ul>
         </article>
 
-        <article class="card" data-cat="fin">
-          <span class="tag">Finanzas y operaciones</span>
+        <article class="glow card tilt rv" data-cat="fin">
+          <span class="tag fn"><i></i>Finanzas</span>
           <h3>Importación desde China</h3>
-          <p class="ctx">Negocio propio y agente de compras · Bolivia · 2017–2023</p>
-          <div class="result"><span class="n">25 pedidos</span><span class="l">consolidados en un solo contenedor</span></div>
-          <div class="psr">
+          <p class="ctx">Negocio propio y agente de compras · 2017–2023</p>
+          <div class="res"><span class="n">25 pedidos</span><span class="l">consolidados en un solo contenedor</span></div>
+          <div class="rs">
             <div><span class="k">Reto</span><p>Pequeños compradores no podían importar solos por el coste de un contenedor.</p></div>
-            <div><span class="k">Solución</span><p>Verifiqué proveedores, preparé presupuestos con todos los costes de importación y consolidé pedidos de unos 10 clientes fijos en contenedor compartido.</p></div>
+            <div><span class="k">Solución</span><p>Verifiqué proveedores, preparé presupuestos con todos los costes de importación y consolidé pedidos de unos 10 clientes fijos.</p></div>
           </div>
-          <ul class="stack"><li>Comercio exterior</li><li>Costes de importación</li><li>Negociación</li></ul>
+          <ul class="stack"><li>Comercio exterior</li><li>Costes</li><li>Negociación</li></ul>
         </article>
 
-        <article class="card" data-cat="fin">
-          <span class="tag">Finanzas y operaciones</span>
+        <article class="glow card tilt rv" data-cat="fin">
+          <span class="tag fn"><i></i>Finanzas</span>
           <h3>Dirección de obra en El Alto</h3>
           <p class="ctx">Project Manager · Bolivia · 2022–2023</p>
-          <div class="result"><span class="n">4 plantas</span><span class="l">construidas en 9 meses, hoy en alquiler</span></div>
-          <div class="psr">
+          <div class="res"><span class="n">4 plantas en 9 meses</span><span class="l">hoy genera ingresos por alquiler</span></div>
+          <div class="rs">
             <div><span class="k">Reto</span><p>Levantar un edificio con presupuesto ajustado y compras internacionales.</p></div>
             <div><span class="k">Solución</span><p>Planifiqué la obra, gestioné las compras y coordiné a arquitecto, ingeniero y constructores hasta la entrega.</p></div>
           </div>
@@ -409,124 +446,322 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
     </div>
   </section>
 
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      <span>Power BI</span><span>Excel · Power Query · VBA</span><span>AppSheet</span><span>Apps Script</span><span>Make</span><span>API de ChatGPT</span><span>Gemini</span><span>NotebookLM</span><span>Python</span><span>SQL</span><span>Jira</span><span>HubSpot</span>
+      <span>Power BI</span><span>Excel · Power Query · VBA</span><span>AppSheet</span><span>Apps Script</span><span>Make</span><span>API de ChatGPT</span><span>Gemini</span><span>NotebookLM</span><span>Python</span><span>SQL</span><span>Jira</span><span>HubSpot</span>
+    </div>
+  </div>
+
   <section class="block" id="herramientas" aria-labelledby="h-herr">
     <div class="wrap">
-      <div class="sec-head"><div><h2 id="h-herr">Herramientas</h2><p>Lo que uso en el día a día.</p></div></div>
+      <div class="sec-head rv"><div><p class="kicker">Stack</p><h2 id="h-herr">Herramientas que domino</h2></div></div>
       <div class="skills">
-        <div><h4>Finanzas</h4><ul><li>Presupuestos y forecasting</li><li>Análisis de desviaciones</li><li>Estados financieros</li><li>Contabilidad y fiscalidad</li></ul></div>
-        <div><h4>Datos</h4><ul><li>Excel avanzado (Power Query, VBA)</li><li>Power BI</li><li>Google Sheets</li><li>SQL y Python</li></ul></div>
-        <div><h4>Automatización e IA</h4><ul><li>AppSheet y Apps Script</li><li>Make</li><li>API de ChatGPT y Gemini</li><li>NotebookLM</li></ul></div>
-        <div><h4>Gestión</h4><ul><li>Scrum y objetivos SMART</li><li>Jira, Asana y Trello</li><li>HubSpot y Meta Ads</li><li>ERP</li></ul></div>
+        <div class="glow skill tilt rv"><h4>Finanzas</h4><ul><li>Presupuestos y forecasting</li><li>Análisis de desviaciones</li><li>Estados financieros</li><li>Contabilidad y fiscalidad</li></ul></div>
+        <div class="glow skill tilt rv"><h4>Datos</h4><ul><li>Excel avanzado</li><li>Power BI</li><li>Google Sheets</li><li>SQL y Python</li></ul></div>
+        <div class="glow skill tilt rv"><h4>Automatización e IA</h4><ul><li>AppSheet y Apps Script</li><li>Make</li><li>API de ChatGPT y Gemini</li><li>NotebookLM</li></ul></div>
+        <div class="glow skill tilt rv"><h4>Gestión</h4><ul><li>Scrum y objetivos SMART</li><li>Jira, Asana y Trello</li><li>HubSpot y Meta Ads</li><li>ERP</li></ul></div>
       </div>
     </div>
   </section>
 
-  <section class="block" id="trayectoria" aria-labelledby="h-tray">
+  <section class="block" id="trayectoria" aria-labelledby="h-tray" style="padding-top:0">
     <div class="wrap">
-      <div class="sec-head"><div><h2 id="h-tray">Trayectoria</h2><p>Los puestos más recientes y relevantes.</p></div></div>
-      <ol class="timeline">
-        <li><span class="when">2026 – hoy</span><div><h3>Administrativa · Operaciones y digitalización</h3><p>Publicaciones MC S.L. · CRM en AppSheet, automatizaciones y web.</p></div></li>
-        <li><span class="when">2024 – 2026</span><div><h3>Tech, Data &amp; Finance Lead</h3><p>MyCityHome · Proyectos de tecnología, dashboards, chatbots y control de costes.</p></div></li>
-        <li><span class="when">2022 – 2023</span><div><h3>Agente de Seguros · Control financiero y reporting</h3><p>Nacional Seguros · Presupuesto, forecasts y reporting automatizado.</p></div></li>
-        <li><span class="when">2017 – 2023</span><div><h3>Importación y venta mayorista</h3><p>Negocio propio y agente de compras internacionales.</p></div></li>
-        <li><span class="when">2017 – 2019</span><div><h3>Asistente Administrativa y Financiera</h3><p>Import Export Yon Ho · Contabilidad e importación.</p></div></li>
-        <li><span class="when">2016 – 2018</span><div><h3>Team Leader y Jefa de Venta de Zona</h3><p>Belcorp · Equipo de 12 a 120 consultoras.</p></div></li>
+      <div class="sec-head rv"><div><p class="kicker">Experiencia</p><h2 id="h-tray">Trayectoria</h2></div></div>
+      <ol class="tl">
+        <li class="glow rv"><span class="when">2026 – hoy</span><div><h3>Administrativa · Operaciones y digitalización</h3><p>Publicaciones MC S.L. · CRM en AppSheet, automatizaciones y web.</p></div></li>
+        <li class="glow rv"><span class="when">2024 – 2026</span><div><h3>Tech, Data &amp; Finance Lead</h3><p>MyCityHome · Proyectos de tecnología, dashboards, chatbots y control de costes.</p></div></li>
+        <li class="glow rv"><span class="when">2022 – 2023</span><div><h3>Agente de Seguros · Control financiero y reporting</h3><p>Nacional Seguros · Presupuesto, forecasts y reporting automatizado.</p></div></li>
+        <li class="glow rv"><span class="when">2017 – 2023</span><div><h3>Importación y venta mayorista</h3><p>Negocio propio y agente de compras internacionales.</p></div></li>
+        <li class="glow rv"><span class="when">2017 – 2019</span><div><h3>Asistente Administrativa y Financiera</h3><p>Import Export Yon Ho · Contabilidad e importación.</p></div></li>
+        <li class="glow rv"><span class="when">2016 – 2018</span><div><h3>Team Leader y Jefa de Venta de Zona</h3><p>Belcorp · Equipo de 12 a 120 consultoras.</p></div></li>
       </ol>
     </div>
   </section>
 
-  <section class="block" aria-labelledby="h-form">
+  <section class="block" aria-label="Formación e idiomas" style="padding-top:0">
     <div class="wrap two">
-      <div>
-        <h2 id="h-form" style="margin-bottom:22px">Formación</h2>
-        <ul class="plain">
-          <li><strong>Máster en Consultoría Financiera y Fiscal</strong><span>Universidad de Castilla-La Mancha</span></li>
-          <li><strong>Máster en Estrategia de Negocio y Marketing</strong><span>Universidad de Castilla-La Mancha</span></li>
-          <li><strong>Licenciatura en Negocios Internacionales</strong><span>Universidad Católica Boliviana</span></li>
-          <li><strong>Licenciatura en Creación y Desarrollo de Empresas</strong><span>Universidad Católica Boliviana</span></li>
-          <li><strong>Programación FullStack</strong><span>Academlo, México</span></li>
+      <div class="glow rv">
+        <h2>Formación</h2>
+        <ul class="edu">
+          <li><b>Máster en Consultoría Financiera y Fiscal</b><span>Universidad de Castilla-La Mancha</span></li>
+          <li><b>Máster en Estrategia de Negocio y Marketing</b><span>Universidad de Castilla-La Mancha</span></li>
+          <li><b>Licenciatura en Negocios Internacionales</b><span>Universidad Católica Boliviana</span></li>
+          <li><b>Licenciatura en Creación y Desarrollo de Empresas</b><span>Universidad Católica Boliviana</span></li>
+          <li><b>Programación FullStack</b><span>Academlo, México</span></li>
         </ul>
       </div>
-      <div>
-        <h2 style="margin-bottom:22px">Idiomas</h2>
-        <div class="lang" role="list">
-          <div role="listitem"><span>Español</span><span class="meter"><i style="width:100%"></i></span><span class="lv">Nativo</span></div>
-          <div role="listitem"><span>Inglés</span><span class="meter"><i style="width:85%"></i></span><span class="lv">C1</span></div>
-          <div role="listitem"><span>Alemán</span><span class="meter"><i style="width:30%"></i></span><span class="lv">A2</span></div>
-          <div role="listitem"><span>Italiano</span><span class="meter"><i style="width:30%"></i></span><span class="lv">A2</span></div>
-          <div role="listitem"><span>Chino</span><span class="meter"><i style="width:15%"></i></span><span class="lv">HSK1</span></div>
+      <div class="glow rv">
+        <h2>Idiomas</h2>
+        <div class="lang">
+          <div class="r"><span>Español</span><span class="m"><i style="width:100%"></i></span><span class="lv">Nativo</span></div>
+          <div class="r"><span>Inglés</span><span class="m"><i style="width:85%"></i></span><span class="lv">C1</span></div>
+          <div class="r"><span>Alemán</span><span class="m"><i style="width:30%"></i></span><span class="lv">A2</span></div>
+          <div class="r"><span>Italiano</span><span class="m"><i style="width:30%"></i></span><span class="lv">A2</span></div>
+          <div class="r"><span>Chino</span><span class="m"><i style="width:15%"></i></span><span class="lv">HSK1</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="block" id="contacto" aria-labelledby="h-cont">
+  <section id="contacto" aria-labelledby="h-cont">
     <div class="wrap">
-      <div class="contact">
+      <div class="contact rv">
         <div>
-          <h2 id="h-cont">¿Hablamos?</h2>
-          <p>Busco un puesto en finanzas, datos o transformación digital donde pueda automatizar procesos y ahorrar tiempo y costes. Madrid, híbrido o remoto.</p>
-        </div>
-        <div class="contact-list">
-          <div class="contact-row">
-            <div><span class="k">Email</span><span class="v" id="email">claudiafloresjaqueline@gmail.com</span></div>
-            <button class="copy" type="button" id="copy-email" data-copy="claudiafloresjaqueline@gmail.com">Copiar</button>
-          </div>
-          <div class="contact-row">
-            <div><span class="k">WhatsApp</span><a href="https://wa.me/34642431218" target="_blank" rel="noopener">+34 642 431 218</a></div>
-            <button class="copy" type="button" id="copy-tel" data-copy="+34 642 431 218">Copiar</button>
-          </div>
-          <div class="contact-row">
-            <div><span class="k">LinkedIn</span><a href="https://www.linkedin.com/in/jaqueline-claudia-barrionuevo-flores" target="_blank" rel="noopener">jaqueline-claudia-barrionuevo-flores</a></div>
-          </div>
-          <div class="contact-row">
-            <div><span class="k">GitHub</span><a href="https://github.com/jaquelineClaudia" target="_blank" rel="noopener">jaquelineClaudia</a></div>
+          <p class="kicker">Contacto</p>
+          <h2 id="h-cont">¿Automatizamos algo juntos?</h2>
+          <p>Busco un puesto en finanzas, datos o transformación digital donde pueda ahorrar tiempo y costes desde el primer mes. Madrid, híbrido o remoto.</p>
+          <div class="clist" style="margin-top:26px">
+            <div class="crow"><div><span class="k">Email</span><span class="v">claudiafloresjaqueline@gmail.com</span></div><button class="copy" type="button" id="copy-email" data-copy="claudiafloresjaqueline@gmail.com">Copiar</button></div>
+            <div class="crow"><div><span class="k">WhatsApp</span><a href="https://wa.me/34642431218" target="_blank" rel="noopener">+34 642 431 218</a></div><button class="copy" type="button" id="copy-tel" data-copy="+34 642 431 218">Copiar</button></div>
+            <div class="crow"><div><span class="k">LinkedIn · GitHub</span><a href="https://www.linkedin.com/in/jaqueline-claudia-barrionuevo-flores" target="_blank" rel="noopener">LinkedIn ↗</a> &nbsp; <a href="https://github.com/jaquelineClaudia" target="_blank" rel="noopener">GitHub ↗</a></div></div>
           </div>
         </div>
+        <form class="cform" id="cform" novalidate>
+          <h3>Escríbeme</h3>
+          <div class="frow">
+            <label for="f-nombre">Nombre</label>
+            <input id="f-nombre" name="nombre" type="text" autocomplete="name" required>
+          </div>
+          <div class="frow two-f">
+            <div><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+            <div><label for="f-empresa">Empresa <span class="opt">(opcional)</span></label><input id="f-empresa" name="empresa" type="text" autocomplete="organization"></div>
+          </div>
+          <div class="frow">
+            <label for="f-motivo">Motivo</label>
+            <select id="f-motivo" name="motivo">
+              <option>Oferta de empleo</option>
+              <option>Proyecto o colaboración</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="frow">
+            <label for="f-mensaje">Mensaje</label>
+            <textarea id="f-mensaje" name="mensaje" rows="4" required></textarea>
+          </div>
+          <input type="text" name="_honey" id="f-honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn primary sendb" type="submit" id="f-send">Enviar mensaje →</button>
+          <p class="fstatus" id="fstatus" role="status" aria-live="polite"></p>
+        </form>
       </div>
     </div>
   </section>
 </main>
 
 <footer>
-  <div class="wrap">
-    <span>Jaqueline Barrionuevo · Madrid</span>
-    <span>Finanzas, datos y automatización con IA</span>
-  </div>
+  <div class="wrap"><span>© 2026 Jaqueline Barrionuevo · Madrid</span><span>Finanzas, datos y automatización con IA</span></div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function () {
-  var buttons = document.querySelectorAll('.chip-btn');
-  var items = document.querySelectorAll('[data-cat]');
-  buttons.forEach(function (b) {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- 3D globe ---------- */
+  function initGlobe() {
+    var canvas = document.getElementById('globe');
+    if (!canvas || !window.THREE) return;
+    var renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); } catch (e) { return; }
+    var fb = document.querySelector('.globe-fallback'); if (fb) fb.hidden = true;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+    camera.position.set(0, 0, 7);
+    var world = new THREE.Group(); scene.add(world);
+    var R = 1.9;
+
+    function ll(lat, lon, r) {
+      var phi = (90 - lat) * Math.PI / 180, th = (lon + 180) * Math.PI / 180;
+      return new THREE.Vector3(-r * Math.sin(phi) * Math.cos(th), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(th));
+    }
+
+    // Fibonacci point sphere
+    var N = 2600, pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
+    var cMint = new THREE.Color('#3CE0B0'), cBlue = new THREE.Color('#5B8CFF'), cMag = new THREE.Color('#FF3D8B');
+    for (var i = 0; i < N; i++) {
+      var y = 1 - (i / (N - 1)) * 2, rad = Math.sqrt(1 - y * y), th = i * 2.399963;
+      pos[i*3] = Math.cos(th) * rad * R; pos[i*3+1] = y * R; pos[i*3+2] = Math.sin(th) * rad * R;
+      var c = cBlue.clone().lerp(cMint, (y + 1) / 2);
+      if (Math.random() < 0.035) c = cMag;
+      col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b;
+    }
+    var pg = new THREE.BufferGeometry();
+    pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    pg.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    world.add(new THREE.Points(pg, new THREE.PointsMaterial({ size: 0.045, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false })));
+
+    // Inner glow sphere and wire shell
+    world.add(new THREE.Mesh(new THREE.SphereGeometry(R * 0.96, 48, 48), new THREE.MeshBasicMaterial({ color: '#0A1626', transparent: true, opacity: 0.8 })));
+    var wire = new THREE.Mesh(new THREE.IcosahedronGeometry(R * 1.12, 1), new THREE.MeshBasicMaterial({ color: '#5B8CFF', wireframe: true, transparent: true, opacity: 0.08 }));
+    scene.add(wire);
+
+    // Cities
+    var laPaz = ll(-16.5, -68.15, R), madrid = ll(40.42, -3.70, R);
+    function marker(v, color) {
+      var g = new THREE.Group();
+      var dot = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 16), new THREE.MeshBasicMaterial({ color: color }));
+      var halo = new THREE.Mesh(new THREE.RingGeometry(0.12, 0.16, 32), new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.7, side: THREE.DoubleSide }));
+      halo.lookAt(v.clone().multiplyScalar(2));
+      g.add(dot); g.add(halo); g.position.copy(v); world.add(g);
+      return halo;
+    }
+    var h1 = marker(laPaz, '#FF8A3D'), h2 = marker(madrid, '#3CE0B0');
+
+    // Arc
+    var mid = laPaz.clone().add(madrid).multiplyScalar(0.5).normalize().multiplyScalar(R * 1.55);
+    var curve = new THREE.QuadraticBezierCurve3(laPaz, mid, madrid);
+    var ag = new THREE.TubeGeometry(curve, 120, 0.016, 8, false);
+    var arcTotal = ag.index.count;
+    var arc = new THREE.Mesh(ag, new THREE.MeshBasicMaterial({ color: '#FFC93C' }));
+    world.add(arc);
+    var comet = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 16), new THREE.MeshBasicMaterial({ color: '#FFFFFF' }));
+    world.add(comet);
+
+    // Orbit ring
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(R * 1.26, 0.005, 8, 160), new THREE.MeshBasicMaterial({ color: '#FF3D8B', transparent: true, opacity: 0.35 }));
+    ring.rotation.x = Math.PI * 0.42; ring.rotation.y = 0.3; scene.add(ring);
+
+    // Face the arc toward the viewer
+    var baseQ = new THREE.Quaternion().setFromUnitVectors(mid.clone().normalize(), new THREE.Vector3(0, 0.2, 1).normalize());
+    var yAxis = new THREE.Vector3(0, 1, 0), wob = new THREE.Quaternion();
+    world.quaternion.copy(baseQ);
+
+    var tx = 0, ty = 0, cx = 0, cy = 0;
+    window.addEventListener('pointermove', function (e) {
+      tx = (e.clientX / window.innerWidth - 0.5) * 0.5;
+      ty = (e.clientY / window.innerHeight - 0.5) * 0.3;
+    }, { passive: true });
+
+    function size() {
+      var w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', size); size();
+
+    var t0 = performance.now(), running = true;
+    document.addEventListener('visibilitychange', function () { running = !document.hidden; if (running) loop(); });
+    function frame(now) {
+      var t = (now - t0) / 1000;
+      if (!reduce) {
+        wob.setFromAxisAngle(yAxis, Math.sin(t * 0.18) * 0.4); world.quaternion.copy(wob).multiply(baseQ);
+        cx += (tx - cx) * 0.05; cy += (ty - cy) * 0.05;
+        scene.rotation.y = cx; scene.rotation.x = cy;
+        wire.rotation.y = t * 0.05; wire.rotation.x = t * 0.03;
+        ring.rotation.z = t * 0.15;
+        var p = (t * 0.22) % 1;
+        ag.setDrawRange(0, Math.max(6, Math.floor(Math.min(1, p * 1.6) * arcTotal / 6) * 6));
+        comet.position.copy(curve.getPoint(Math.min(1, p * 1.6)));
+        comet.visible = p * 1.6 < 1;
+        var s = 1 + 0.35 * Math.sin(t * 3); h1.scale.set(s, s, s); h2.scale.set(s, s, s);
+      } else {
+        comet.position.copy(curve.getPoint(0.5));
+      }
+      renderer.render(scene, camera);
+    }
+    function loop() { if (!running) return; frame(performance.now()); if (!reduce) requestAnimationFrame(loop); }
+    loop();
+  }
+  try { initGlobe(); } catch (e) { /* fallback stays visible */ }
+
+  /* ---------- Filters ---------- */
+  var fb = document.querySelectorAll('.fbtn'), items = document.querySelectorAll('[data-cat]');
+  fb.forEach(function (b) {
     b.addEventListener('click', function () {
       var f = b.getAttribute('data-f');
-      buttons.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      items.forEach(function (el) {
-        var cats = el.getAttribute('data-cat').split(' ');
-        el.hidden = !(f === 'todos' || cats.indexOf(f) !== -1);
-      });
+      fb.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      items.forEach(function (el) { el.hidden = !(f === 'todos' || el.getAttribute('data-cat').split(' ').indexOf(f) !== -1); });
     });
   });
 
+  /* ---------- Glow + tilt ---------- */
+  var fine = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+  document.querySelectorAll('.glow').forEach(function (el) {
+    el.addEventListener('pointermove', function (e) {
+      var r = el.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      el.style.setProperty('--mx', x + 'px'); el.style.setProperty('--my', y + 'px');
+      if (fine && !reduce && el.classList.contains('tilt')) {
+        var rx = ((y / r.height) - 0.5) * -6, ry = ((x / r.width) - 0.5) * 8;
+        el.style.transform = 'perspective(900px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+      }
+    });
+    el.addEventListener('pointerleave', function () { el.style.transform = ''; });
+  });
+
+  /* ---------- Reveal on scroll (transform only) ---------- */
+  if (!reduce && 'IntersectionObserver' in window) {
+    var vh = window.innerHeight;
+    var rvs = document.querySelectorAll('.rv');
+    rvs.forEach(function (el) { if (el.getBoundingClientRect().top > vh) el.classList.add('pre'); });
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.remove('pre'); io.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    rvs.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---------- Counters ---------- */
+  if (!reduce && 'IntersectionObserver' in window) {
+    var fmt = function (n, sep) { n = Math.round(n); return sep ? n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : String(n); };
+    var co = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target, to = +el.getAttribute('data-to'), pre = el.getAttribute('data-pre') || '', suf = el.getAttribute('data-suf') || '', sep = el.hasAttribute('data-sep');
+        var st = performance.now(), d = 1300;
+        (function step(now) {
+          var k = Math.min(1, (now - st) / d), e = 1 - Math.pow(1 - k, 3);
+          el.textContent = pre + fmt(to * e, sep) + suf;
+          if (k < 1) requestAnimationFrame(step); else el.textContent = pre + fmt(to, sep) + suf;
+        })(st);
+        co.unobserve(el);
+      });
+    }, { threshold: 0.6 });
+    document.querySelectorAll('.metric .n').forEach(function (el) { co.observe(el); });
+  }
+
+
+  /* ---------- Contact form → email (FormSubmit) ---------- */
+  var form = document.getElementById('cform');
+  if (form) {
+    var st = document.getElementById('fstatus'), send = document.getElementById('f-send');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var nombre = form.nombre.value.trim(), email = form.email.value.trim(), msg = form.mensaje.value.trim();
+      var bad = false;
+      [[form.nombre, !nombre], [form.email, !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)], [form.mensaje, !msg]].forEach(function (p) { p[0].setAttribute('aria-invalid', p[1] ? 'true' : 'false'); if (p[1]) bad = true; });
+      if (bad) { st.className = 'fstatus err'; st.textContent = 'Revisa tu nombre, un email válido y el mensaje.'; return; }
+      if (form._honey.value) return;
+      send.disabled = true; st.className = 'fstatus'; st.textContent = 'Enviando…';
+      fetch('https://formsubmit.co/ajax/claudiafloresjaqueline@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          nombre: nombre, email: email, empresa: form.empresa.value.trim(), motivo: form.motivo.value, mensaje: msg,
+          _subject: 'Nuevo mensaje desde tu portfolio: ' + form.motivo.value, _replyto: email, _template: 'table', _captcha: 'false'
+        })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (d && (d.success === true || d.success === 'true')) {
+          form.reset(); st.className = 'fstatus ok'; st.textContent = 'Mensaje enviado. Te responderé lo antes posible.';
+        } else { throw new Error('fail'); }
+      }).catch(function () {
+        st.className = 'fstatus err'; st.textContent = 'No se pudo enviar. Escríbeme a claudiafloresjaqueline@gmail.com.';
+      }).then(function () { send.disabled = false; });
+    });
+  }
+
+  /* ---------- Copy ---------- */
   document.querySelectorAll('.copy').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var text = btn.getAttribute('data-copy');
-      var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1600); };
-      var fallback = function () {
-        var target = btn.parentElement.querySelector('.v, a');
-        if (!target) return;
-        var r = document.createRange(); r.selectNodeContents(target);
+      var txt = btn.getAttribute('data-copy');
+      var ok = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1600); };
+      var fall = function () {
+        var t = btn.parentElement.querySelector('.v, a'); if (!t) return;
+        var r = document.createRange(); r.selectNodeContents(t);
         var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-        btn.textContent = 'Seleccionado';
-        setTimeout(function () { btn.textContent = 'Copiar'; }, 1600);
+        btn.textContent = 'Seleccionado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1600);
       };
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(done, fallback);
-        } else { fallback(); }
-      } catch (e) { fallback(); }
+      try { navigator.clipboard.writeText(txt).then(ok, fall); } catch (e) { fall(); }
     });
   });
 })();
