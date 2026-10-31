@@ -741,11 +741,17 @@ footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wr
           _subject: 'Nuevo mensaje desde tu portfolio: ' + form.motivo.value, _replyto: email, _template: 'table', _captcha: 'false'
         })
       }).then(function (r) { return r.json(); }).then(function (d) {
+        var m = String((d && d.message) || '').toLowerCase();
         if (d && (d.success === true || d.success === 'true')) {
           form.reset(); st.className = 'fstatus ok'; st.textContent = 'Mensaje enviado. Te responderé lo antes posible.';
-        } else { throw new Error('fail'); }
+        } else if (m.indexOf('activ') !== -1) {
+          st.className = 'fstatus ok'; st.textContent = 'El formulario está pendiente de activación. Mientras tanto, escríbeme a claudiafloresjaqueline@gmail.com.';
+        } else { throw new Error(m || 'fail'); }
       }).catch(function () {
-        st.className = 'fstatus err'; st.textContent = 'No se pudo enviar. Escríbeme a claudiafloresjaqueline@gmail.com.';
+        var asunto = encodeURIComponent('Contacto desde tu portfolio: ' + form.motivo.value);
+        var cuerpo = encodeURIComponent(msg + '\n\n' + nombre + (form.empresa.value ? ' · ' + form.empresa.value : '') + '\n' + email);
+        st.className = 'fstatus err';
+        st.innerHTML = 'No se pudo enviar desde aquí. <a href="mailto:claudiafloresjaqueline@gmail.com?subject=' + asunto + '&body=' + cuerpo + '">Envíalo desde tu correo</a> o escríbeme a claudiafloresjaqueline@gmail.com.';
       }).then(function () { send.disabled = false; });
     });
   }
