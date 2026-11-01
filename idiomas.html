@@ -356,6 +356,7 @@ form.add input, form.add select, .chat-form textarea, .chat-setup select { borde
   function saveLocal() { try { localStorage.setItem("pasaporte", JSON.stringify(state)); } catch (e) {} }
 
   function save() {
+    state.t = Date.now();
     saveLocal();
     if (!docRef) return;
     dirty = true;
@@ -365,8 +366,11 @@ form.add input, form.add select, .chat-form textarea, .chat-setup select { borde
   async function flush() {
     if (saving || !dirty || !docRef) return;
     saving = true; dirty = false;
-    try { await docRef.set({ log: state.log, cards: state.cards, custom: state.custom, updated: new Date().toISOString() }); setSync("Guardado en tu cuenta · " + new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })); }
-    catch (e) { setSync(e && e.code === "invalid_argument" ? "Esta vista es de solo lectura." : "No se pudo guardar ahora; se guarda en este navegador."); }
+    try { await docRef.set({ log: state.log, cards: state.cards, custom: state.custom, t: state.t || Date.now(), updated: new Date().toISOString() }); setSync("Guardado en tu cuenta · " + new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })); }
+    catch (e) {
+      setSync(e && e.code === "invalid_argument" ? "Esta vista es de solo lectura; tu progreso se guarda en este navegador." : "No se pudo guardar en tu cuenta ahora; se guarda en este navegador y se reintenta.");
+      if (!(e && e.code === "invalid_argument")) { dirty = true; setTimeout(flush, 5000); saving = false; return; }
+    }
     saving = false;
     if (dirty) flush();
   }
@@ -434,7 +438,7 @@ form.add input, form.add select, .chat-form textarea, .chat-setup select { borde
       (revealed
         ? '<button class="btn again" type="button" id="again">Otra vez</button><button class="btn good" type="button" id="good">La sabía</button>'
         : '<button class="btn" type="button" id="reveal">Ver significado</button>') +
-      '</div><p class="sync" style="text-align:center">' + due.length + ' pendientes de ' + esc(LANGS[cardLang].name.toLowerCase()) + '</p>';
+      '</div><p class="sync" style="text-align:center">' + due.length + ' pendientes de ' + esc(LANGS[cardLang].name.toLowerCase()) + ' hoy</p>';
     document.getElementById("say").addEventListener("click", function () { speak(current.f, current.l); });
     if (revealed) {
       document.getElementById("again").addEventListener("click", function () { grade(false); });
@@ -651,10 +655,13 @@ form.add input, form.add select, .chat-form textarea, .chat-setup select { borde
       docRef.onSnapshot(function (snap) {
         clearTimeout(timer);
         if (snap.exists) {
+          var data = snap.data() || {};
           if (!dirty && !saving) {
-            var data = snap.data() || {};
-            state.log = data.log || {}; state.cards = data.cards || {}; state.custom = data.custom || [];
-            saveLocal(); renderAll();
+            if ((data.t || 0) < (state.t || 0)) { dirty = true; flush(); }
+            else if ((data.t || 0) > (state.t || 0)) {
+              state.log = data.log || {}; state.cards = data.cards || {}; state.custom = data.custom || []; state.t = data.t || 0;
+              saveLocal(); renderAll();
+            }
           }
           setSync("Sincronizado con tu cuenta: tu progreso se ve igual en el móvil y en el ordenador.");
         } else if (first) {
