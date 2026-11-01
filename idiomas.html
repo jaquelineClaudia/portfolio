@@ -101,6 +101,10 @@ h3 { font: 700 1.05rem/1.3 var(--display); margin: 0; }
 .card .back { margin-top: 12px; font-size: 1.15rem; color: var(--muted); }
 .card .box { position: absolute; top: 12px; right: 14px; }
 .card-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+.add-msg { margin: 10px 0 0; font-size: .92rem; min-height: 1.4em; }
+.add-msg.ok { color: var(--ok); }
+.add-msg.bad { color: var(--stamp); }
+form.add input::placeholder { color: var(--muted); opacity: .55; font-style: italic; }
 .speak { border: 1.5px solid var(--line); background: transparent; border-radius: 8px; padding: 4px 9px; font-size: .9rem; }
 form.add { display: grid; grid-template-columns: 130px 1fr 1fr auto; gap: 8px; align-items: end; }
 form.add label { display: grid; gap: 4px; font-size: .8rem; color: var(--muted); }
@@ -207,18 +211,19 @@ form.add input, form.add select, .chat-form textarea, .chat-setup select { borde
       <div id="card-area"></div>
       <div class="panel" style="margin-top:18px">
         <h3 style="margin-bottom:10px">Añadir tarjeta</h3>
-        <form class="add" id="add-form">
+        <form class="add" id="add-form" novalidate>
           <label>Idioma
             <select id="add-lang"></select>
           </label>
           <label>Palabra o frase
-            <input id="add-front" required maxlength="120" placeholder="die Rechnung">
+            <input id="add-front" maxlength="120" placeholder="Ej.: der Termin" autocomplete="off">
           </label>
           <label>Significado
-            <input id="add-back" required maxlength="160" placeholder="la factura">
+            <input id="add-back" maxlength="160" placeholder="Ej.: la cita" autocomplete="off">
           </label>
           <button class="btn full" type="submit">Añadir</button>
         </form>
+        <p class="add-msg" id="add-msg" role="status"></p>
       </div>
     </section>
 
@@ -548,7 +553,11 @@ form.add input, form.add select, .chat-form textarea, .chat-setup select { borde
   document.getElementById("add-form").addEventListener("submit", function (e) {
     e.preventDefault();
     var f = document.getElementById("add-front"), b = document.getElementById("add-back");
-    if (!f.value.trim() || !b.value.trim()) return;
+    var msg = document.getElementById("add-msg");
+    if (!f.value.trim() || !b.value.trim()) { msg.className = "add-msg bad"; msg.textContent = !f.value.trim() ? "Escribe la palabra o frase en el idioma (el texto gris es solo un ejemplo)." : "Escribe el significado en español."; (!f.value.trim() ? f : b).focus(); return; }
+    var dup = allCards().some(function (c) { return c.l === addLang.value && c.f.toLowerCase() === f.value.trim().toLowerCase(); });
+    if (dup) { msg.className = "add-msg bad"; msg.textContent = "«" + f.value.trim() + "» ya está en tus tarjetas."; return; }
+    msg.className = "add-msg ok"; msg.textContent = "✓ Añadida: «" + f.value.trim() + "». Aparece en tus tarjetas de " + LANGS[addLang.value].name.toLowerCase() + ".";
     state.custom = state.custom || [];
     state.custom.push({ id: "c" + Date.now().toString(36), l: addLang.value, f: f.value.trim(), b: b.value.trim() });
     f.value = ""; b.value = ""; cardLang = addLang.value; current = null;
