@@ -1,0 +1,494 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oficina de Jaqueline</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Oficina virtual 3D de Jaqueline Barrionuevo: cada sala es un área de habilidades con sus proyectos y resultados.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a full-screen 3D office (one room per skill area) with a floating glass panel: area chips + the selected area's projects. Speech bubbles float over the characters. Single dark look. */
+:root {
+  color-scheme: dark;
+  --bg: #0A0D16;
+  --glass: rgba(12, 16, 26, 0.82);
+  --line: rgba(255, 255, 255, 0.1);
+  --fg: #EEF2F8;
+  --muted: #9AA4B8;
+  --mint: #3CE0B0;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Instrument Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+#scene.drag { cursor: grabbing; }
+
+.top { position: fixed; z-index: 5; top: calc(env(safe-area-inset-top, 0px) + 14px); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: space-between; align-items: center; gap: 12px; pointer-events: none; }
+.top > * { pointer-events: auto; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border-radius: 14px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); text-decoration: none; color: var(--fg); }
+.brand .mk { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; font: 800 0.78rem var(--display); color: #0A0D16; background: conic-gradient(from 200deg, #FF3D8B, #FF8A3D, #FFC93C, #3CE0B0, #5B8CFF, #FF3D8B); }
+.brand b { display: block; font: 600 0.92rem var(--display); letter-spacing: 0.01em; }
+.brand span { display: block; font-size: 0.76rem; color: var(--muted); }
+.back { font-weight: 600; font-size: 0.86rem; color: #0A0D16; background: var(--mint); padding: 10px 14px; border-radius: 12px; text-decoration: none; white-space: nowrap; }
+
+.panel { position: fixed; z-index: 5; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); width: min(390px, calc(100% - 32px)); max-height: calc(100% - 120px); overflow: auto; border-radius: 20px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); padding: 18px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chip { font: 600 0.78rem var(--body); padding: 7px 11px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); color: var(--fg); cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+.chip i { width: 9px; height: 9px; border-radius: 3px; display: block; }
+.chip[aria-pressed="true"] { background: var(--fg); color: #0A0D16; border-color: var(--fg); }
+.chip:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.info .k { font: 500 0.7rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.info h1 { font: 800 1.35rem/1.15 var(--display); letter-spacing: -0.02em; margin: 6px 0 8px; text-wrap: balance; }
+.info p.d { margin: 0 0 14px; color: #C9D1DF; font-size: 0.92rem; line-height: 1.55; }
+.wins { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+.wins li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: baseline; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); font-size: 0.88rem; line-height: 1.4; }
+.wins b { font: 700 0.9rem var(--display); white-space: nowrap; }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.tools span { font-size: 0.74rem; padding: 4px 9px; border-radius: 7px; border: 1px solid var(--line); color: #C9D1DF; }
+.hint { position: fixed; z-index: 5; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); font-size: 0.78rem; color: var(--muted); background: var(--glass); border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+#bubbles { position: fixed; inset: 0; pointer-events: none; z-index: 4; }
+.bubble { position: absolute; transform: translate(-50%, -100%); max-width: 210px; padding: 8px 11px; border-radius: 12px; background: #FFFFFF; color: #10131C; font: 600 0.78rem/1.3 var(--body); box-shadow: 0 8px 24px rgba(0,0,0,0.35); white-space: normal; text-align: center; transition: opacity .25s; }
+.bubble::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: #FFFFFF; }
+.bubble.me { background: linear-gradient(135deg, #3CE0B0, #5B8CFF); color: #08101A; }
+.bubble.me::after { border-top-color: #4BB8D6; }
+.nameTag { position: absolute; transform: translate(-50%, 0); font: 600 0.7rem var(--mono); color: #0A0D16; background: #FFC93C; padding: 3px 7px; border-radius: 6px; white-space: nowrap; }
+
+.fallback[hidden] { display: none; }
+.fallback { position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--muted); }
+
+@media (max-width: 640px) {
+  .panel { max-height: 46%; padding: 14px; bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); }
+  .info h1 { font-size: 1.1rem; }
+  .hint { display: none; }
+  .brand span { display: none; }
+  .bubble { max-width: 150px; font-size: 0.7rem; }
+}
+@media (prefers-reduced-motion: reduce) { .bubble { transition: none; } }
+</style>
+</head><body>
+
+<canvas id="scene" aria-label="Oficina virtual en 3D con seis salas, una por área de trabajo"></canvas>
+<div id="bubbles" aria-hidden="true"></div>
+<div class="fallback" id="fallback" hidden>Tu navegador no puede mostrar 3D. Usa el panel para ver cada área.</div>
+
+<header class="top">
+  <a class="brand" href="https://portfolio-three-kappa-m3tqopo9gp.vercel.app/"><span class="mk">JB</span><span><b>Oficina de Jaqueline</b><span>Cada sala es un área de mi trabajo</span></span></a>
+  <a class="back" href="https://portfolio-three-kappa-m3tqopo9gp.vercel.app/">← Volver al portfolio</a>
+</header>
+
+<aside class="panel" aria-label="Áreas de la oficina">
+  <div class="chips" id="chips" role="group" aria-label="Elegir área"></div>
+  <div class="info" id="info" aria-live="polite"></div>
+</aside>
+<div class="hint">Arrastra para girar · Rueda o pellizca para acercar · Toca una sala</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  var AREAS = [
+    { id: 'todo', nombre: 'Toda la oficina', color: '#EEF2F8', pos: [0, 0],
+      desc: 'Más de 10 años entre Bolivia y España combinando finanzas, datos y automatización con IA. Cada sala de esta oficina es un área donde he trabajado, con sus resultados reales.',
+      wins: [['5 h', 'ahorradas en cada reporte de ocupación'], ['4 h', 'de llamadas liberadas con chatbots'], ['2.000 €', 'ahorrados en proveedores en 3 meses'], ['12 → 120', 'consultoras en mi equipo de ventas']],
+      tools: ['Excel', 'Power BI', 'AppSheet', 'Apps Script', 'Make', 'API de ChatGPT', 'Python'] },
+    { id: 'fin', nombre: 'Finanzas', color: '#FFC93C', pos: [-11, -7],
+      desc: 'Presupuestos, forecasts, estados financieros y control de costes. Máster en Consultoría Financiera y Fiscal.',
+      wins: [['2.000 €', 'ahorrados en 3 meses revisando contratos y renegociando tarifas'], ['−30%', 'de trabajo manual en el reporting mensual con Power Query y VBA'], ['10+', 'empresas con estados financieros elaborados']],
+      tools: ['Presupuestos', 'Forecasting', 'P&L y balance', 'Fiscalidad', 'Excel'],
+      frases: ['Ahorramos 2.000 € en proveedores 💶', 'Forecast del mes listo', 'Cierre mensual sin estrés', 'Balance cuadrado ✅'] },
+    { id: 'datos', nombre: 'Datos y BI', color: '#5B8CFF', pos: [0, -7],
+      desc: 'Dashboards que se actualizan solos, análisis de reseñas y modelos de machine learning.',
+      wins: [['5 h', 'menos en cada reporte de ocupación de más de 50 alojamientos'], ['3', 'plataformas de reseñas en un solo ranking'], ['Top 5', 'dataGol acertó al campeón en 2018 y 2022']],
+      tools: ['Power BI', 'Excel', 'SQL', 'Python', 'Streamlit'],
+      frases: ['Reporte de ocupación: 5 h menos ⏱️', 'dataGol acertó el Top 5 ⚽', 'Dashboard actualizado 📊', 'Ranking de reseñas listo'] },
+    { id: 'ia', nombre: 'Automatización e IA', color: '#3CE0B0', pos: [11, -7],
+      desc: 'Chatbots con la API de ChatGPT, apps en AppSheet y flujos con Make y Apps Script que trabajan solos.',
+      wins: [['4 h', 'de llamadas liberadas con chatbots de WhatsApp y web'], ['Auto', 'archivo de documentos y lector de PDF'], ['Tutor', 'de IA con NotebookLM para formar al equipo']],
+      tools: ['API de ChatGPT', 'Make', 'AppSheet', 'Apps Script', 'NotebookLM', 'Gemini'],
+      frases: ['Chatbot: 4 h de llamadas liberadas 🤖', 'PDF leído y archivado solo', 'Tutor de IA listo para el equipo', 'Flujo de Make activado ⚡'] },
+    { id: 'comex', nombre: 'Comercio exterior', color: '#FF8A3D', pos: [-11, 7],
+      desc: 'Importación desde China, aranceles, consolidación de carga y logística aérea.',
+      wins: [['25', 'pedidos consolidados en un solo contenedor'], ['4 → 15', 'proveedores internacionales'], ['5', 'campañas de Navidad importando con mi propio negocio']],
+      tools: ['Importación', 'Aranceles', 'Logística aérea', 'Negociación'],
+      frases: ['25 pedidos en un contenedor 📦', 'Aranceles calculados', 'Proveedores: de 4 a 15 🌏', 'Carga aérea documentada ✈️'] },
+    { id: 'mkt', nombre: 'Marketing y ventas', color: '#FF3D8B', pos: [0, 7],
+      desc: 'Captación de clientes, campañas digitales, CRM y liderazgo de equipos comerciales.',
+      wins: [['12 → 120', 'consultoras en mi equipo de ventas'], ['270+', 'clientes captados a mano'], ['CRM', 'de ventas a medida en AppSheet']],
+      tools: ['Meta Ads', 'HubSpot', 'CRM', 'SEO', 'TikTok'],
+      frases: ['¡Equipo de 12 a 120! 🚀', '270 clientes en cartera', 'Campaña lanzada 📣', 'Lead cualificado ✅'] },
+    { id: 'pm', nombre: 'Gestión de proyectos', color: '#A98BFF', pos: [11, 7],
+      desc: 'Proyectos de tecnología con Scrum y dirección de una obra completa en Bolivia.',
+      wins: [['4 plantas', 'construidas en 9 meses, hoy en alquiler'], ['Scrum', 'para coordinar al equipo de IT'], ['SMART', 'objetivos medibles en cada proyecto']],
+      tools: ['Scrum', 'Jira', 'Asana', 'Trello', 'Presupuestos'],
+      frases: ['Sprint cerrado ✅', 'Edificio entregado en 9 meses 🏗️', 'Daily de las 9:30', 'Roadmap actualizado 🗺️'] }
+  ];
+  var byId = {}; AREAS.forEach(function (a) { byId[a.id] = a; });
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Panel ---------- */
+  var chips = document.getElementById('chips'), info = document.getElementById('info');
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  AREAS.forEach(function (a) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.id = 'chip-' + a.id; b.dataset.id = a.id;
+    b.innerHTML = '<i style="background:' + a.color + '"></i>' + esc(a.nombre);
+    b.addEventListener('click', function () { select(a.id); });
+    chips.appendChild(b);
+  });
+  function renderInfo(a) {
+    info.innerHTML =
+      '<span class="k">' + (a.id === 'todo' ? 'Bienvenida' : 'Sala') + '</span>' +
+      '<h1 style="color:' + (a.id === 'todo' ? 'var(--fg)' : a.color) + '">' + esc(a.nombre) + '</h1>' +
+      '<p class="d">' + esc(a.desc) + '</p>' +
+      '<ul class="wins">' + a.wins.map(function (w) { return '<li><b style="color:' + (a.id === 'todo' ? 'var(--mint)' : a.color) + '">' + esc(w[0]) + '</b><span>' + esc(w[1]) + '</span></li>'; }).join('') + '</ul>' +
+      '<div class="tools">' + a.tools.map(function (t) { return '<span>' + esc(t) + '</span>'; }).join('') + '</div>';
+    chips.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', c.dataset.id === a.id ? 'true' : 'false'); });
+  }
+  var current = 'todo';
+  var onSelect = function () {};
+  function select(id) { current = id; renderInfo(byId[id]); onSelect(id); }
+  renderInfo(byId.todo);
+
+  /* ---------- 3D ---------- */
+  var canvas = document.getElementById('scene');
+  if (!window.THREE) { document.getElementById('fallback').hidden = false; return; }
+  var renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true }); }
+  catch (e) { document.getElementById('fallback').hidden = false; return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color('#0A0D16');
+  scene.fog = new THREE.Fog('#0A0D16', 40, 85);
+  var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+
+  scene.add(new THREE.HemisphereLight('#BFD4FF', '#1A1530', 0.75));
+  var sun = new THREE.DirectionalLight('#FFFFFF', 0.9);
+  sun.position.set(14, 26, 12); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  var sc = sun.shadow.camera; sc.left = -24; sc.right = 24; sc.top = 20; sc.bottom = -20; sc.near = 1; sc.far = 70;
+  scene.add(sun);
+
+  function mat(c, o) { o = o || {}; return new THREE.MeshStandardMaterial({ color: c, roughness: o.r != null ? o.r : 0.7, metalness: o.m || 0, emissive: o.e || '#000000', emissiveIntensity: o.ei || 1, transparent: !!o.t, opacity: o.t || 1 }); }
+  function box(w, h, d, m, x, y, z, parent) {
+    var b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+    b.position.set(x, y, z); b.castShadow = true; b.receiveShadow = true; (parent || scene).add(b); return b;
+  }
+  function cyl(rt, rb, h, m, x, y, z, parent, seg) {
+    var c = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg || 16), m);
+    c.position.set(x, y, z); c.castShadow = true; c.receiveShadow = true; (parent || scene).add(c); return c;
+  }
+  function label(text, color) {
+    var cv = document.createElement('canvas'), ctx = cv.getContext('2d');
+    cv.width = 512; cv.height = 128;
+    ctx.fillStyle = 'rgba(10,13,22,0.82)';
+    var r = 30; ctx.beginPath(); ctx.moveTo(r, 8); ctx.arcTo(504, 8, 504, 120, r); ctx.arcTo(504, 120, 8, 120, r); ctx.arcTo(8, 120, 8, 8, r); ctx.arcTo(8, 8, 504, 8, r); ctx.fill();
+    ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.stroke();
+    ctx.fillStyle = color; ctx.font = '700 46px "Unbounded", "Arial Black", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(text, 256, 66, 470);
+    var t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding;
+    var s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false }));
+    s.scale.set(5.2, 1.3, 1); return s;
+  }
+
+  // Floor
+  var floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 60), mat('#121726', { r: 0.95 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+  var grid = new THREE.GridHelper(80, 40, '#1E2740', '#171E31'); grid.position.y = 0.01; scene.add(grid);
+
+  var ROOM = 9, pickables = [], rooms = {};
+  var deskMat = mat('#E9E4DA', { r: 0.6 }), legMat = mat('#2A3043'), chairMat = mat('#262C40'), darkMat = mat('#1B2030');
+
+  function desk(g, x, z, rot, screenColor) {
+    var d = new THREE.Group(); d.position.set(x, 0, z); d.rotation.y = rot || 0; g.add(d);
+    box(1.8, 0.08, 0.9, deskMat, 0, 0.78, 0, d);
+    [[-0.82, -0.38], [0.82, -0.38], [-0.82, 0.38], [0.82, 0.38]].forEach(function (p) { box(0.06, 0.78, 0.06, legMat, p[0], 0.39, p[1], d); });
+    box(0.9, 0.55, 0.05, darkMat, 0, 1.15, -0.3, d);
+    var scr = new THREE.Mesh(new THREE.PlaneGeometry(0.82, 0.47), new THREE.MeshBasicMaterial({ color: screenColor }));
+    scr.position.set(0, 1.15, -0.27); d.add(scr);
+    box(0.08, 0.3, 0.08, darkMat, 0, 0.95, -0.3, d);
+    box(0.55, 0.06, 0.55, chairMat, 0, 0.5, 0.75, d);
+    box(0.55, 0.6, 0.06, chairMat, 0, 0.82, 1.02, d);
+    cyl(0.04, 0.04, 0.45, legMat, 0, 0.25, 0.75, d, 8);
+    return d;
+  }
+
+  function buildRoom(a) {
+    var g = new THREE.Group(); g.position.set(a.pos[0], 0, a.pos[1]); scene.add(g);
+    var c = new THREE.Color(a.color);
+    var tile = new THREE.Mesh(new THREE.BoxGeometry(ROOM, 0.12, ROOM), mat(c.clone().multiplyScalar(0.22).getStyle(), { r: 0.9 }));
+    tile.position.y = 0.06; tile.receiveShadow = true; tile.userData.zone = a.id; g.add(tile); pickables.push(tile);
+    var edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(ROOM, 0.12, ROOM)), new THREE.LineBasicMaterial({ color: a.color }));
+    edge.position.y = 0.06; g.add(edge);
+    // Back and side glass walls
+    var glass = mat(a.color, { t: 0.12, r: 0.2 });
+    var back = box(ROOM, 1.6, 0.08, glass, 0, 0.92, -ROOM / 2, g); back.castShadow = false;
+    var frame = box(ROOM, 0.08, 0.1, mat(a.color, { e: a.color, ei: 0.35 }), 0, 1.74, -ROOM / 2, g); frame.castShadow = false;
+    // Desks
+    desk(g, -2.2, -1.2, 0, a.color);
+    desk(g, 2.2, -1.2, 0, a.color);
+    // Plant
+    cyl(0.25, 0.2, 0.45, mat('#3A2F2A'), 3.7, 0.35, 3.6, g);
+    var leaf = new THREE.Mesh(new THREE.IcosahedronGeometry(0.45, 0), mat('#2E9E6B', { r: 0.8 })); leaf.position.set(3.7, 0.95, 3.6); leaf.castShadow = true; g.add(leaf);
+    // Area props
+    props[a.id] && props[a.id](g, a.color);
+    // Floating label
+    var l = label(a.nombre, a.color); l.position.set(0, 3.3, -ROOM / 2 + 0.5); g.add(l);
+    rooms[a.id] = { group: g, label: l, center: new THREE.Vector3(a.pos[0], 0, a.pos[1]) };
+  }
+
+  var anims = [];
+  var props = {
+    fin: function (g, col) {
+      // Coin stacks + board with rising bars
+      [[-3.3, 2.6, 5], [-2.7, 3.1, 8], [-3.6, 3.4, 3]].forEach(function (p) {
+        for (var i = 0; i < p[2]; i++) cyl(0.28, 0.28, 0.07, mat('#FFC93C', { m: 0.6, r: 0.35 }), p[0], 0.16 + i * 0.075, p[1], g, 20);
+      });
+      var board = box(2.6, 1.6, 0.08, mat('#F4F1E8'), 0, 1.7, -4.3, g);
+      [0.4, 0.7, 0.55, 1.0, 1.25].forEach(function (h, i) { box(0.28, h, 0.04, mat(col), -0.9 + i * 0.45, 1.0 + h / 2, -4.24, g); });
+    },
+    datos: function (g, col) {
+      var wall = box(3.4, 2.0, 0.1, darkMat, 0, 1.6, -4.25, g);
+      var bars = [];
+      for (var i = 0; i < 7; i++) {
+        var b = box(0.3, 1, 0.06, new THREE.MeshBasicMaterial({ color: i % 2 ? '#5B8CFF' : '#3CE0B0' }), -1.35 + i * 0.45, 1.0, -4.17, g);
+        b.castShadow = false; bars.push(b);
+      }
+      anims.push(function (t) { bars.forEach(function (b, i) { var h = 0.35 + 0.65 * Math.abs(Math.sin(t * 0.8 + i * 0.7)); b.scale.y = h * 1.5; b.position.y = 0.7 + (h * 1.5) / 2; }); });
+    },
+    ia: function (g, col) {
+      for (var i = 0; i < 2; i++) {
+        var x = -3.4 + i * 0.9;
+        box(0.75, 2.2, 0.75, darkMat, x, 1.1, 2.8, g);
+        for (var j = 0; j < 6; j++) {
+          var led = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 0.02), new THREE.MeshBasicMaterial({ color: col }));
+          led.position.set(x, 0.35 + j * 0.32, 3.18); g.add(led);
+          (function (l, k) { anims.push(function (t) { l.visible = Math.sin(t * 4 + k * 1.7) > -0.3; }); })(led, i * 6 + j);
+        }
+      }
+      var orb = new THREE.Mesh(new THREE.IcosahedronGeometry(0.45, 1), new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.8, wireframe: true }));
+      orb.position.set(2.8, 2.2, 2.6); g.add(orb);
+      anims.push(function (t) { orb.rotation.y = t * 0.8; orb.rotation.x = t * 0.5; orb.position.y = 2.2 + Math.sin(t * 1.5) * 0.15; });
+    },
+    comex: function (g, col) {
+      var cont = box(3.2, 1.3, 1.3, mat('#E2711D', { r: 0.6, m: 0.2 }), -1.8, 0.77, 2.9, g);
+      for (var i = 0; i < 9; i++) box(0.04, 1.1, 1.32, mat('#B85A15'), -3.2 + i * 0.35, 0.77, 2.9, g);
+      [[1.6, 2.8], [2.2, 3.4], [1.9, 3.0, 1]].forEach(function (p) { box(0.6, 0.5, 0.6, mat('#C9A06A'), p[0], 0.37 + (p[2] ? 0.5 : 0), p[1], g); });
+      var globe = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16), mat('#5B8CFF', { r: 0.4 }));
+      globe.position.set(3.4, 1.15, -2.9); g.add(globe);
+      cyl(0.05, 0.05, 0.5, legMat, 3.4, 0.55, -2.9, g, 8);
+      anims.push(function (t) { globe.rotation.y = t * 0.6; });
+    },
+    mkt: function (g, col) {
+      cyl(0.6, 0.7, 0.5, mat(col, { r: 0.5 }), 0, 0.37, 2.6, g, 24);
+      var mega = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.8, 20, 1, true), mat('#F4F1E8', { r: 0.5 }));
+      mega.rotation.z = Math.PI / 2; mega.position.set(0, 1.25, 2.6); mega.castShadow = true; g.add(mega);
+      var arrow = new THREE.Group(); arrow.position.set(-3.2, 0.2, 2.8); g.add(arrow);
+      [0.5, 0.9, 1.4, 2.0].forEach(function (h, i) { box(0.35, h, 0.35, mat(col, { e: col, ei: 0.15 }), i * 0.45, h / 2, 0, arrow); });
+      anims.push(function (t) { mega.rotation.x = Math.sin(t * 2) * 0.2; });
+    },
+    pm: function (g, col) {
+      box(3.2, 1.9, 0.08, mat('#F4F1E8'), 0, 1.65, -4.3, g);
+      var notes = ['#FFC93C', '#3CE0B0', '#FF3D8B', '#5B8CFF', '#FFC93C', '#3CE0B0', '#A98BFF', '#FF8A3D'];
+      notes.forEach(function (c, i) { box(0.4, 0.4, 0.03, mat(c), -1.1 + (i % 3) * 1.1 + (i > 5 ? 0.55 : 0), 2.2 - Math.floor(i / 3) * 0.55, -4.24, g); });
+      // Small building model
+      [[0, 1.6], [1, 1.2], [2, 0.8], [3, 0.4]].forEach(function (f) { box(1.2 - f[0] * 0.05, 0.4, 1.0, mat(f[0] % 2 ? '#A98BFF' : '#D9CCFF'), 3.0, 0.3 + f[0] * 0.42, 2.8, g); });
+    }
+  };
+
+  AREAS.slice(1).forEach(buildRoom);
+
+  // Lobby: coffee bar + welcome rug
+  var rug = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.2, 0.04, 48), mat('#1D2438', { r: 1 }));
+  rug.position.y = 0.03; rug.receiveShadow = true; scene.add(rug);
+  var ring = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.05, 8, 64), new THREE.MeshBasicMaterial({ color: '#FFC93C' }));
+  ring.rotation.x = Math.PI / 2; ring.position.y = 0.06; scene.add(ring);
+  box(2.2, 1.0, 0.7, mat('#2A3150'), -16.5, 0.5, 0, null);
+  cyl(0.18, 0.18, 0.5, mat('#C9CED8', { m: 0.6, r: 0.3 }), -16.9, 1.25, 0, null);
+
+  /* ---------- Characters ---------- */
+  var skins = ['#C68B59', '#8D5524', '#E0AC69', '#F1C27D', '#B07A4A'];
+  var hairs = ['#1B1210', '#3B2416', '#0E0E10', '#5A3A22'];
+  function person(shirt, opts) {
+    opts = opts || {};
+    var g = new THREE.Group();
+    var skin = mat(opts.skin || skins[Math.floor(Math.random() * skins.length)], { r: 0.8 });
+    var pants = mat(opts.pants || '#2B3350');
+    var body = cyl(0.26, 0.3, 0.62, mat(shirt, { r: 0.6 }), 0, 0.95, 0, g, 14);
+    var head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 18, 14), skin); head.position.y = 1.5; head.castShadow = true; g.add(head);
+    var hair = new THREE.Mesh(new THREE.SphereGeometry(0.255, 18, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), mat(opts.hair || hairs[Math.floor(Math.random() * hairs.length)], { r: 0.9 }));
+    hair.position.y = 1.53; hair.rotation.x = -0.25; g.add(hair);
+    if (opts.longHair) { var lh = box(0.42, 0.5, 0.12, mat(opts.hair || '#1B1210', { r: 0.9 }), 0, 1.3, -0.17, g); }
+    [-0.09, 0.09].forEach(function (x) { var e = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 8), new THREE.MeshBasicMaterial({ color: '#141414' })); e.position.set(x, 1.53, 0.22); g.add(e); });
+    function limb(x, y, len, m) { var p = new THREE.Group(); p.position.set(x, y, 0); g.add(p); box(0.13, len, 0.13, m, 0, -len / 2, 0, p); return p; }
+    var lL = limb(-0.12, 0.64, 0.6, pants), lR = limb(0.12, 0.64, 0.6, pants);
+    var aL = limb(-0.34, 1.2, 0.5, mat(shirt, { r: 0.6 })), aR = limb(0.34, 1.2, 0.5, mat(shirt, { r: 0.6 }));
+    g.userData = { legs: [lL, lR], arms: [aL, aR], body: body };
+    return g;
+  }
+
+  var people = [];
+  var lobbySpots = [[-15.2, 1.2], [-15.2, -1.2], [-1.5, 1.5], [1.5, -1.5], [16, 0], [-5.5, 0], [5.5, 0]];
+  function randIn(area) { var h = ROOM / 2 - 1; return new THREE.Vector3(area.pos[0] + (Math.random() * 2 - 1) * h, 0, area.pos[1] + (Math.random() * 2 - 1) * h + 0.6); }
+  AREAS.slice(1).forEach(function (a) {
+    for (var i = 0; i < 2; i++) {
+      var p = person(a.color);
+      var start = randIn(a); p.position.copy(start); scene.add(p);
+      people.push({ obj: p, area: a, target: randIn(a), speed: 1.1 + Math.random() * 0.5, wait: Math.random() * 3, phase: Math.random() * 6 });
+    }
+  });
+  // Jaqueline in the lobby
+  var me = person('#FF3D8B', { skin: '#C68B59', hair: '#120C0A', longHair: true, pants: '#1D2438' });
+  me.scale.set(1.18, 1.18, 1.18); me.position.set(0, 0, 0); scene.add(me);
+  var meData = { obj: me, phase: 0 };
+
+  /* ---------- Bubbles ---------- */
+  var layer = document.getElementById('bubbles');
+  var tag = document.createElement('div'); tag.className = 'nameTag'; tag.textContent = 'Jaqueline'; layer.appendChild(tag);
+  var meBubble = document.createElement('div'); meBubble.className = 'bubble me'; meBubble.textContent = '¡Hola! Toca una sala para ver mis proyectos 👋'; layer.appendChild(meBubble);
+  var active = [];
+  function speak(pp) {
+    if (active.some(function (b) { return b.p === pp; })) return;
+    var el = document.createElement('div'); el.className = 'bubble';
+    var fr = pp.area.frases; el.textContent = fr[Math.floor(Math.random() * fr.length)];
+    layer.appendChild(el); active.push({ p: pp, el: el, until: performance.now() + 3600 });
+  }
+  var v3 = new THREE.Vector3();
+  function place(el, obj, yOff) {
+    v3.set(obj.position.x, yOff, obj.position.z).project(camera);
+    var vis = v3.z < 1 && v3.x > -1.2 && v3.x < 1.2 && v3.y > -1.2 && v3.y < 1.2;
+    el.style.display = vis ? '' : 'none';
+    if (!vis) return;
+    el.style.left = ((v3.x + 1) / 2 * window.innerWidth) + 'px';
+    el.style.top = ((1 - v3.y) / 2 * window.innerHeight) + 'px';
+  }
+
+  /* ---------- Camera control ---------- */
+  var target = new THREE.Vector3(0, 0, 0), targetGoal = target.clone();
+  var theta = 0.65, phi = 0.95, radius = 34, radiusGoal = 34;
+  var dragging = false, lastX = 0, lastY = 0, moved = 0, idle = 0, pinch = null;
+  function updateCamera() {
+    camera.position.set(target.x + radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi), target.z + radius * Math.sin(phi) * Math.cos(theta));
+    camera.lookAt(target);
+  }
+  canvas.addEventListener('pointerdown', function (e) { dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY; canvas.classList.add('drag'); canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener('pointermove', function (e) {
+    if (!dragging || pinch) return;
+    var dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    theta -= dx * 0.006; phi = Math.min(1.35, Math.max(0.35, phi - dy * 0.004)); idle = 0;
+  });
+  canvas.addEventListener('pointerup', function (e) {
+    canvas.classList.remove('drag'); dragging = false;
+    if (moved < 6) pick(e.clientX, e.clientY);
+  });
+  canvas.addEventListener('wheel', function (e) { e.preventDefault(); radiusGoal = Math.min(55, Math.max(9, radiusGoal * (1 + e.deltaY * 0.001))); idle = 0; }, { passive: false });
+  canvas.addEventListener('touchstart', function (e) { if (e.touches.length === 2) { pinch = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); } }, { passive: true });
+  canvas.addEventListener('touchmove', function (e) {
+    if (e.touches.length === 2 && pinch) {
+      var d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      radiusGoal = Math.min(55, Math.max(9, radiusGoal * pinch / d)); pinch = d; moved = 99;
+    }
+  }, { passive: true });
+  canvas.addEventListener('touchend', function (e) { if (e.touches.length < 2) pinch = null; }, { passive: true });
+
+  var ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  function pick(x, y) {
+    ndc.set(x / window.innerWidth * 2 - 1, -(y / window.innerHeight) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    var hit = ray.intersectObjects(pickables)[0];
+    select(hit ? hit.object.userData.zone : 'todo');
+  }
+  onSelect = function (id) {
+    idle = 0;
+    Object.keys(rooms).forEach(function (k) { rooms[k].label.material.opacity = (id === 'todo' || id === k) ? 1 : 0.2; });
+    if (id === 'todo') { targetGoal.set(0, 0, 0); radiusGoal = window.innerWidth < 640 ? 46 : 34; meBubble.textContent = '¡Hola! Toca una sala para ver mis proyectos 👋'; }
+    else {
+      var r = rooms[id]; targetGoal.copy(r.center); radiusGoal = window.innerWidth < 640 ? 19 : 15;
+      meBubble.textContent = 'Esta es mi sala de ' + byId[id].nombre.toLowerCase() + ' ✨';
+      people.forEach(function (pp) { if (pp.area.id === id) speak(pp); });
+    }
+  };
+
+  function size() {
+    var w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h, false); camera.aspect = w / h;
+    if (w < 640) camera.setViewOffset(w, h, 0, h * 0.2, w, h); else camera.clearViewOffset();
+    camera.updateProjectionMatrix();
+    if (current === 'todo') radiusGoal = w < 640 ? 46 : 34;
+  }
+  window.addEventListener('resize', size); size(); radius = radiusGoal;
+
+  /* ---------- Loop ---------- */
+  var clock = new THREE.Clock(), nextTalk = 1.5, running = true;
+  document.addEventListener('visibilitychange', function () { running = !document.hidden; if (running) { clock.getDelta(); requestAnimationFrame(loop); } });
+  function walk(o, t, amp) {
+    var u = o.userData;
+    u.legs[0].rotation.x = Math.sin(t) * amp; u.legs[1].rotation.x = -Math.sin(t) * amp;
+    u.arms[0].rotation.x = -Math.sin(t) * amp * 0.8; u.arms[1].rotation.x = Math.sin(t) * amp * 0.8;
+  }
+  function loop() {
+    if (!running) return;
+    var dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+    var motion = reduce ? 0 : 1;
+
+    people.forEach(function (pp) {
+      var o = pp.obj;
+      if (pp.wait > 0) { pp.wait -= dt; walk(o, 0, 0); return; }
+      var dir = pp.target.clone().sub(o.position); dir.y = 0;
+      var dist = dir.length();
+      if (dist < 0.15) {
+        pp.wait = 1.5 + Math.random() * 3.5;
+        if (Math.random() < 0.2) { var s = lobbySpots[Math.floor(Math.random() * lobbySpots.length)]; pp.target = new THREE.Vector3(s[0], 0, s[1]); }
+        else pp.target = randIn(pp.area);
+        return;
+      }
+      dir.normalize();
+      o.position.addScaledVector(dir, Math.min(dist, pp.speed * dt * motion));
+      var ang = Math.atan2(dir.x, dir.z), da = ang - o.rotation.y;
+      while (da > Math.PI) da -= Math.PI * 2; while (da < -Math.PI) da += Math.PI * 2;
+      o.rotation.y += da * Math.min(1, dt * 8);
+      pp.phase += dt * 9 * motion;
+      walk(o, pp.phase, 0.6 * motion);
+      o.position.y = Math.abs(Math.sin(pp.phase)) * 0.05 * motion;
+    });
+
+    // Jaqueline waves and turns toward the camera
+    var camAng = Math.atan2(camera.position.x - me.position.x, camera.position.z - me.position.z);
+    me.rotation.y += (camAng - me.rotation.y) * 0.05;
+    me.userData.arms[1].rotation.z = 2.4 + Math.sin(t * 6) * 0.35 * motion;
+    me.userData.arms[1].rotation.x = 0;
+
+    anims.forEach(function (f) { f(reduce ? 0 : t); });
+
+    if (!reduce && t > nextTalk) { speak(people[Math.floor(Math.random() * people.length)]); nextTalk = t + 1.6 + Math.random() * 1.6; }
+
+    // Camera ease + idle auto-rotation
+    idle += dt;
+    if (!dragging && idle > 4 && !reduce) theta += dt * 0.05;
+    target.lerp(targetGoal, Math.min(1, dt * 3));
+    radius += (radiusGoal - radius) * Math.min(1, dt * 3);
+    updateCamera();
+    renderer.render(scene, camera);
+
+    // Bubbles
+    var now = performance.now();
+    active = active.filter(function (b) {
+      if (now > b.until) { b.el.remove(); return false; }
+      place(b.el, b.p.obj, 2.15); return true;
+    });
+    place(meBubble, me, 2.55);
+    place(tag, me, -0.1);
+
+    requestAnimationFrame(loop);
+  }
+  updateCamera();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body></html>
