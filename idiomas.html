@@ -1,0 +1,664 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pasaporte de idiomas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a passport — navy cover header with an MRZ line, tabbed "pages" below (Hoy · Tarjetas · Hablar · Plan · Progreso), each language marked by its own stamp colour. */
+:root {
+  --bg: #EEF1EE;
+  --page: #FAFBF8;
+  --ink: #18223A;
+  --muted: #5B6578;
+  --line: #D5DBD6;
+  --cover: #1C2945;
+  --cover-ink: #F2EBD6;
+  --gold: #B8862B;
+  --stamp: #C2353F;
+  --ok: #2F7D5B;
+  --de: #B8862B; --it: #2F8A55; --en: #2F5DA8; --zh: #C2353F; --fr: #5A4FB3; --mix: #7A5C3E;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0F1524; --page: #161E31; --ink: #E9ECF3; --muted: #9AA3B6; --line: #2A3450;
+  --cover: #0B1120; --cover-ink: #EADFC0; --gold: #D9A84A; --stamp: #E05A62; --ok: #4CB384;
+  --de: #D9A84A; --it: #4CB37A; --en: #6E95E0; --zh: #E05A62; --fr: #9389E8; --mix: #B48A63;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0F1524; --page: #161E31; --ink: #E9ECF3; --muted: #9AA3B6; --line: #2A3450;
+  --cover: #0B1120; --cover-ink: #EADFC0; --gold: #D9A84A; --stamp: #E05A62; --ok: #4CB384;
+  --de: #D9A84A; --it: #4CB37A; --en: #6E95E0; --zh: #E05A62; --fr: #9389E8; --mix: #B48A63;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--cover); }
+.wrap { max-width: 880px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* Cover */
+.cover { background: var(--cover); color: var(--cover-ink); }
+.cover .wrap { padding-block: 22px 18px; display: grid; gap: 14px; }
+.cover-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.cover h1 { font: 800 clamp(1.7rem, 4.6vw, 2.5rem)/1.05 var(--display); letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.cover .sub { margin: 6px 0 0; opacity: .8; font-size: .95rem; }
+.streak { display: grid; justify-items: center; min-width: 88px; padding: 8px 12px; border: 2px solid var(--gold); border-radius: 10px; transform: rotate(-3deg); color: var(--gold); }
+.streak b { font: 800 1.8rem/1 var(--display); font-variant-numeric: tabular-nums; }
+.streak span { font: 500 .66rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.mrz { font: 500 clamp(.62rem, 1.9vw, .8rem)/1.4 var(--mono); letter-spacing: .12em; opacity: .55; overflow-wrap: anywhere; }
+
+/* Tabs */
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.tabs .wrap { display: flex; gap: 4px; overflow-x: auto; padding-block: 8px; scrollbar-width: none; }
+.tab { border: 0; background: transparent; padding: 8px 14px; border-radius: 999px; font-weight: 600; color: var(--muted); white-space: nowrap; text-decoration: none; }
+.tab[aria-current="page"] { background: var(--ink); color: var(--page); }
+
+main .wrap { padding-block: 22px 60px; }
+section[hidden] { display: none; }
+h2 { font: 800 1.45rem/1.2 var(--display); margin: 0 0 4px; text-wrap: balance; }
+h3 { font: 700 1.05rem/1.3 var(--display); margin: 0; }
+.lede { color: var(--muted); margin: 0 0 18px; max-width: 62ch; }
+.k { font: 500 .7rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.stack { display: grid; gap: 12px; }
+.panel { background: var(--page); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+
+/* Language chip */
+.chip { display: inline-flex; align-items: center; gap: 6px; font: 500 .72rem var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; border: 1.5px solid currentColor; }
+.c-de { color: var(--de); } .c-it { color: var(--it); } .c-en { color: var(--en); } .c-zh { color: var(--zh); } .c-fr { color: var(--fr); } .c-mix { color: var(--mix); } .c-rep { color: var(--muted); }
+
+/* Week strip */
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 18px; }
+.day { text-align: center; padding: 8px 0; border-radius: 10px; border: 1px solid var(--line); background: var(--page); }
+.day b { display: block; font: 700 .9rem var(--display); }
+.day i { display: block; width: 10px; height: 10px; border-radius: 50%; margin: 5px auto 0; border: 1.5px solid var(--line); }
+.day.done i { background: var(--ok); border-color: var(--ok); }
+.day.today { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+
+/* Task list */
+.task { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; background: var(--page); border: 1px solid var(--line); border-radius: 12px; }
+.task input { width: 22px; height: 22px; accent-color: var(--ok); }
+.task .t { min-width: 0; }
+.task .t p { margin: 4px 0 0; }
+.task .min { font: 500 .8rem var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.task.is-done p { text-decoration: line-through; color: var(--muted); }
+.notice { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 12px 16px; border-radius: 12px; border: 1.5px dashed var(--stamp); color: var(--ink); margin-top: 14px; }
+.btn { border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 700; background: var(--ink); color: var(--page); }
+.btn.alt { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+.btn.good { background: var(--ok); color: #fff; }
+.btn.again { background: var(--stamp); color: #fff; }
+.btn:disabled { opacity: .45; cursor: default; }
+
+/* Flashcards */
+.langpick { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.langpick button { border: 1.5px solid var(--line); background: var(--page); border-radius: 999px; padding: 6px 12px; font-weight: 600; }
+.langpick button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--page); }
+.card { min-height: 220px; display: grid; place-items: center; text-align: center; padding: 28px 20px; background: var(--page); border: 1px solid var(--line); border-radius: 16px; position: relative; }
+.card .front { font: 800 clamp(1.5rem, 5vw, 2.2rem)/1.2 var(--display); overflow-wrap: anywhere; }
+.card .back { margin-top: 12px; font-size: 1.15rem; color: var(--muted); }
+.card .box { position: absolute; top: 12px; right: 14px; }
+.card-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+.speak { border: 1.5px solid var(--line); background: transparent; border-radius: 8px; padding: 4px 9px; font-size: .9rem; }
+form.add { display: grid; grid-template-columns: 130px 1fr 1fr auto; gap: 8px; align-items: end; }
+form.add label { display: grid; gap: 4px; font-size: .8rem; color: var(--muted); }
+form.add input, form.add select, .chat-form textarea, .chat-setup select { border: 1.5px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 10px; min-width: 0; }
+
+/* Chat */
+.chat-setup { display: flex; gap: 8px; flex-wrap: wrap; align-items: end; margin-bottom: 12px; }
+.chat-setup label { display: grid; gap: 4px; font-size: .8rem; color: var(--muted); }
+.chat { display: grid; gap: 10px; min-height: 160px; max-height: 55vh; overflow-y: auto; padding: 14px; background: var(--page); border: 1px solid var(--line); border-radius: 14px; }
+.msg { max-width: 85%; padding: 10px 13px; border-radius: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.me { justify-self: end; background: var(--ink); color: var(--page); border-bottom-right-radius: 4px; }
+.msg.bot { justify-self: start; background: var(--bg); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.msg .fix { display: block; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); color: var(--muted); font-size: .92rem; }
+.chat-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 10px; }
+.chat-form textarea { resize: vertical; min-height: 46px; }
+.empty { color: var(--muted); font-size: .95rem; text-align: center; align-self: center; }
+
+/* Plan */
+.phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.phase { background: var(--page); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.phase ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: .95rem; }
+.langs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.lang { background: var(--page); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; align-content: start; }
+.lang-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.cefr { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; }
+.cefr span { font: 500 .66rem var(--mono); text-align: center; padding: 4px 0; border-radius: 4px; background: var(--bg); color: var(--muted); }
+.cefr span.have { background: currentColor; }
+.cefr span.have em { color: var(--page); font-style: normal; }
+.cefr span.goal { outline: 2px dashed currentColor; outline-offset: -2px; }
+.lang p { margin: 0; font-size: .95rem; }
+.lang ul { margin: 0; padding-left: 18px; font-size: .92rem; display: grid; gap: 3px; }
+.lang a { color: inherit; }
+.rules { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.sched { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.sched th, .sched td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.sched th { font: 500 .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.scroll { overflow-x: auto; }
+
+/* Progress */
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stat { background: var(--page); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.stat b { display: block; font: 800 1.9rem/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: 90px 1fr 60px; gap: 10px; align-items: center; font-size: .92rem; }
+.bar .track { height: 12px; background: var(--bg); border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+.bar .fill { height: 100%; background: currentColor; border-radius: 6px; }
+.bar .v { font: 500 .8rem var(--mono); text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.sync { font-size: .8rem; color: var(--muted); margin-top: 18px; }
+
+@media (max-width: 680px) {
+  .phases, .langs { grid-template-columns: minmax(0, 1fr); }
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .stat { padding: 10px; }
+  .stat b { font-size: 1.4rem; }
+  form.add { grid-template-columns: 1fr 1fr; }
+  form.add .full { grid-column: 1 / -1; }
+  .week { gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+</head><body>
+
+<header class="cover">
+  <div class="wrap">
+    <div class="cover-top">
+      <div>
+        <h1>Pasaporte de idiomas</h1>
+        <p class="sub">Jaqueline · alemán, inglés, italiano y chino ahora; francés, portugués y coreano después</p>
+      </div>
+      <div class="streak" aria-label="Racha de días"><b id="streak">0</b><span>días seguidos</span></div>
+    </div>
+    <div class="mrz" aria-hidden="true">P&lt;ESPBARRIONUEVO&lt;&lt;JAQUELINE&lt;&lt;&lt;DE&lt;A2&gt;B2&lt;&lt;EN&lt;C1&lt;&lt;IT&lt;A2&gt;B1&lt;&lt;ZH&lt;HSK1&gt;2&lt;&lt;&lt;</div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Secciones">
+  <div class="wrap">
+    <a class="tab" href="#hoy" data-view="hoy">Hoy</a>
+    <a class="tab" href="#tarjetas" data-view="tarjetas">Tarjetas</a>
+    <a class="tab" href="#hablar" data-view="hablar">Hablar con Claude</a>
+    <a class="tab" href="#plan" data-view="plan">Plan</a>
+    <a class="tab" href="#progreso" data-view="progreso">Progreso</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <section id="v-hoy">
+      <h2 id="today-title">Hoy</h2>
+      <p class="lede">Unos 55 minutos entre semana, menos el fin de semana. Marca cada bloque al terminarlo: así sube tu racha.</p>
+      <div class="week" id="week"></div>
+      <div class="stack" id="tasks"></div>
+      <div class="notice" id="due-notice" hidden>
+        <span id="due-text"></span>
+        <a class="btn" href="#tarjetas">Repasar ahora</a>
+      </div>
+    </section>
+
+    <section id="v-tarjetas" hidden>
+      <h2>Tarjetas</h2>
+      <p class="lede">Cada día entran 6 palabras nuevas por idioma. Repaso inteligente: lo que sabes vuelve cada vez más tarde (1, 3, 7, 14 y 30 días); lo que fallas vuelve hoy.</p>
+      <div class="langpick" id="card-langs" role="group" aria-label="Idioma"></div>
+      <div id="card-area"></div>
+      <div class="panel" style="margin-top:18px">
+        <h3 style="margin-bottom:10px">Añadir tarjeta</h3>
+        <form class="add" id="add-form">
+          <label>Idioma
+            <select id="add-lang"></select>
+          </label>
+          <label>Palabra o frase
+            <input id="add-front" required maxlength="120" placeholder="die Rechnung">
+          </label>
+          <label>Significado
+            <input id="add-back" required maxlength="160" placeholder="la factura">
+          </label>
+          <button class="btn full" type="submit">Añadir</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="v-hablar" hidden>
+      <h2>Hablar con Claude</h2>
+      <p class="lede">Conversa en el idioma que practicas. Claude responde a tu nivel y corrige tus errores en español. En el móvil, usa el micrófono del teclado para dictar.</p>
+      <div class="chat-setup">
+        <label>Idioma
+          <select id="chat-lang"></select>
+        </label>
+        <label>Situación
+          <select id="chat-scene">
+            <option>Conversación libre</option>
+            <option>Entrevista de trabajo</option>
+            <option>Reunión de trabajo</option>
+            <option>Presentarme y hablar de mi carrera</option>
+            <option>En el restaurante o de compras</option>
+            <option>Hablar del libro que estoy leyendo</option>
+          </select>
+        </label>
+        <button class="btn alt" type="button" id="chat-start">Empezar de nuevo</button>
+      </div>
+      <div class="chat" id="chat" aria-live="polite"><p class="empty">Pulsa «Empezar de nuevo» y Claude abre la conversación.</p></div>
+      <form class="chat-form" id="chat-form">
+        <textarea id="chat-input" rows="2" placeholder="Escribe o dicta tu respuesta…" aria-label="Tu mensaje"></textarea>
+        <button class="btn" type="submit" id="chat-send">Enviar</button>
+      </form>
+      <p class="sync" id="chat-status"></p>
+    </section>
+
+    <section id="v-plan" hidden>
+      <h2>Plan por fases</h2>
+      <p class="lede">Dos idiomas a fondo a la vez y el resto en mantenimiento. Siete idiomas al mismo tiempo no avanzan; dos bien elegidos, sí.</p>
+      <div class="phases" id="phases"></div>
+
+      <h2 style="margin-top:28px">Cada idioma</h2>
+      <p class="lede">Tu nivel ahora (relleno) y la meta de esta etapa (borde discontinuo) en la escala europea.</p>
+      <div class="langs" id="langs"></div>
+
+      <h2 style="margin-top:28px">Semana tipo</h2>
+      <div class="panel scroll"><table class="sched" id="sched"></table></div>
+
+      <h2 style="margin-top:28px">Reglas de oro</h2>
+      <div class="panel">
+        <ol class="rules">
+          <li>Todos los días algo, aunque sean 10 minutos. La racha importa más que las horas.</li>
+          <li>Alemán cada día de lunes a viernes: es tu idioma foco hasta el B2.</li>
+          <li>El libro semanal, cuando puedas, en el idioma que estudias (lecturas graduadas en alemán e italiano).</li>
+          <li>Habla desde el primer día: 10 minutos con Claude valen más que una hora de gramática.</li>
+          <li>Cada palabra útil del trabajo, a una tarjeta: factura, presupuesto, entrevista…</li>
+          <li>Un examen oficial por año: es la meta que te mantiene constante y suma al CV.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="v-progreso" hidden>
+      <h2>Progreso</h2>
+      <p class="lede">Minutos de esta semana por idioma, según los bloques que marcas en «Hoy».</p>
+      <div class="stats">
+        <div class="stat"><span class="k">Esta semana</span><b id="st-week">0 min</b></div>
+        <div class="stat"><span class="k">Tarjetas dominadas</span><b id="st-cards">0</b></div>
+        <div class="stat"><span class="k">Días estudiados</span><b id="st-days">0</b></div>
+      </div>
+      <div class="panel"><div class="bars" id="bars"></div></div>
+      <p class="sync" id="sync"></p>
+    </section>
+
+  </div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var LANGS = {
+    de: { name: "Alemán", tts: "de-DE", level: "A2", goal: "B2" },
+    en: { name: "Inglés", tts: "en-GB", level: "C1", goal: "C1" },
+    it: { name: "Italiano", tts: "it-IT", level: "A2", goal: "B1" },
+    zh: { name: "Chino", tts: "zh-CN", level: "A1", goal: "A2" },
+    fr: { name: "Francés", tts: "fr-FR", level: "—", goal: "A2" },
+    mix: { name: "Inmersión", tts: "" },
+    rep: { name: "Repaso", tts: "" }
+  };
+  var CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"];
+
+  /* Monday = 1 … Sunday = 0 */
+  var WEEK = {
+    1: [["de", 30, "Nicos Weg (DW): una lección + su vocabulario"], ["en", 15, "Un podcast en inglés y anota 5 expresiones nuevas"], ["zh", 10, "HelloChinese: una lección"]],
+    2: [["de", 30, "Gramática: un tema + ejercicios"], ["it", 20, "Podcast Italiano: un episodio con transcripción"]],
+    3: [["de", 20, "Tarjetas + un vídeo de Easy German"], ["en", 25, "Escribir: un post de LinkedIn o un email formal en inglés"]],
+    4: [["de", 30, "Nicos Weg + 10 min hablando con Claude"], ["it", 15, "Tarjetas + un vídeo corto"], ["zh", 10, "Caracteres: 5 nuevos y repasar"]],
+    5: [["en", 20, "Hablar con Claude: entrevista de trabajo en inglés"], ["de", 20, "Hablar con Claude en alemán sobre tu semana"]],
+    6: [["mix", 45, "Serie o película en alemán o italiano, con subtítulos en ese idioma"], ["mix", 30, "Libro de la semana: leer en el idioma que estudias"]],
+    0: [["rep", 20, "Repaso de todas las tarjetas pendientes"], ["rep", 10, "Mirar tu progreso y elegir 3 metas para la semana"]]
+  };
+  var DOW = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+  var DOW1 = ["D", "L", "M", "X", "J", "V", "S"];
+
+  var STARTER = {
+    de: [["die Rechnung", "la factura"], ["der Umsatz", "la facturación, las ventas"], ["die Bewerbung", "la candidatura"], ["das Vorstellungsgespräch", "la entrevista de trabajo"], ["der Lebenslauf", "el currículum"], ["die Erfahrung", "la experiencia"], ["die Steuer", "el impuesto"], ["verhandeln", "negociar"], ["zuverlässig", "fiable"], ["die Abteilung", "el departamento"], ["die Besprechung", "la reunión"], ["Könnten Sie das bitte wiederholen?", "¿Podría repetirlo, por favor?"], ["Ich arbeite im Finanzbereich.", "Trabajo en el área de finanzas."]],
+    en: [["to streamline", "agilizar, simplificar un proceso"], ["cash flow forecast", "previsión de tesorería"], ["accounts payable", "cuentas por pagar (proveedores)"], ["to leverage", "aprovechar, sacar partido de"], ["stakeholder", "parte interesada"], ["bottleneck", "cuello de botella"], ["to take ownership", "hacerse responsable"], ["a ballpark figure", "una cifra aproximada"], ["to follow up", "hacer seguimiento"], ["to be on the same page", "estar de acuerdo, alineados"], ["headcount", "plantilla, número de empleados"], ["year-on-year growth", "crecimiento interanual"]],
+    it: [["la fattura", "la factura"], ["il fatturato", "la facturación"], ["il colloquio di lavoro", "la entrevista de trabajo"], ["l'esperienza", "la experiencia"], ["le tasse", "los impuestos"], ["affidabile", "fiable"], ["il reparto", "el departamento"], ["la riunione", "la reunión"], ["Lavoro nel settore finanziario.", "Trabajo en el sector financiero."], ["Potrebbe ripetere, per favore?", "¿Podría repetir, por favor?"], ["la scadenza", "la fecha límite, el vencimiento"], ["il preventivo", "el presupuesto (a un cliente)"]],
+    zh: [["你好 · nǐ hǎo", "hola"], ["谢谢 · xièxie", "gracias"], ["工作 · gōngzuò", "trabajo, trabajar"], ["公司 · gōngsī", "empresa"], ["钱 · qián", "dinero"], ["学习 · xuéxí", "estudiar"], ["朋友 · péngyou", "amigo"], ["时间 · shíjiān", "tiempo"], ["今天 · jīntiān", "hoy"], ["明天 · míngtiān", "mañana"], ["多少钱？ · duōshao qián?", "¿cuánto cuesta?"], ["我是玻利维亚人 · wǒ shì Bōlìwéiyà rén", "soy boliviana"]],
+    fr: [["bonjour", "hola, buenos días"], ["je m'appelle…", "me llamo…"], ["je travaille dans la finance", "trabajo en finanzas"], ["l'entreprise", "la empresa"], ["la réunion", "la reunión"], ["merci beaucoup", "muchas gracias"]]
+  };
+  var INTERVALS = [0, 1, 3, 7, 14, 30];
+
+  var PHASES = [
+    { k: "Fase 1 · nov 2026 – jun 2027", t: "Alemán al B1 y certificar tu inglés", items: ["Alemán A2 → B1, examen telc o Goethe B1 en junio de 2027", "Inglés: Cambridge C1 Advanced en primavera de 2027", "Italiano en mantenimiento, A2 sólido", "Chino: vocabulario HSK2 (unas 300 palabras)"] },
+    { k: "Fase 2 · jul 2027 – jun 2028", t: "Alemán B2 e italiano B1; empieza francés", items: ["Alemán B1 → B2, examen telc B2 en 2028", "Italiano A2 → B1, examen CILS o CELI B1", "Francés A1 → A2, idioma de trabajo de la ONU", "Chino: examen HSK2"] },
+    { k: "Fase 3 · 2028 en adelante", t: "Portugués rápido, francés B1 y coreano", items: ["Portugués: desde el español, A1 → B1 en unos 6 meses", "Francés A2 → B1", "Coreano por gusto: alfabeto y frases básicas", "Mantener alemán, inglés e italiano con lectura y series"] }
+  ];
+  var LANGINFO = {
+    de: { why: "Tu idioma foco: abre trabajo en empresas alemanas, en Suiza y Austria y en multinacionales en Madrid.", exam: "telc / Goethe B1 (jun 2027) → telc B2 (2028)", res: [["Nicos Weg (DW), curso gratis", "https://learngerman.dw.com/es/"], ["Easy German (YouTube)", "https://www.youtube.com/@EasyGerman"], ["Exámenes telc", "https://www.telc.net/"]] },
+    en: { why: "Ya tienes C1: el objetivo es certificarlo y usarlo en entrevistas y en LinkedIn.", exam: "Cambridge C1 Advanced (primavera 2027)", res: [["Cambridge C1 Advanced", "https://www.cambridgeenglish.org/exams-and-tests/advanced/"], ["BBC Learning English", "https://www.bbc.co.uk/learningenglish/"]] },
+    it: { why: "Muy cercano al español: con 15–20 minutos al día avanza rápido.", exam: "CILS o CELI B1 (2028)", res: [["Podcast Italiano", "https://www.podcastitaliano.com/"], ["CILS, Universidad para Extranjeros de Siena", "https://cils.unistrasi.it/"]] },
+    zh: { why: "Mantenimiento ligero: 10 minutos dos días por semana para no perder el HSK1 y llegar al HSK2.", exam: "HSK2 (2028)", res: [["HelloChinese", "https://www.hellochinese.cc/"], ["Exámenes HSK", "https://www.chinesetest.cn/"]] },
+    fr: { why: "Empieza en la fase 2. Es idioma de trabajo de la ONU, así que suma mucho para tu meta internacional.", exam: "DELF A2 → B1", res: [["TV5Monde Apprendre (gratis)", "https://apprendre.tv5monde.com/es"]] }
+  };
+
+  /* ---------- State ---------- */
+  var state = { log: {}, cards: {}, custom: [] };
+  var db = null, docRef = null, pending = null, saving = false, dirty = false;
+
+  function todayKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function dayLog(k) { if (!state.log[k]) state.log[k] = { done: [], min: {}, rev: 0 }; return state.log[k]; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function loadLocal() { try { var s = localStorage.getItem("pasaporte"); if (s) state = Object.assign(state, JSON.parse(s)); } catch (e) {} }
+  function saveLocal() { try { localStorage.setItem("pasaporte", JSON.stringify(state)); } catch (e) {} }
+
+  function save() {
+    saveLocal();
+    if (!docRef) return;
+    dirty = true;
+    clearTimeout(pending);
+    pending = setTimeout(flush, 900);
+  }
+  async function flush() {
+    if (saving || !dirty || !docRef) return;
+    saving = true; dirty = false;
+    try { await docRef.set({ log: state.log, cards: state.cards, custom: state.custom, updated: new Date().toISOString() }); setSync("Guardado en tu cuenta · " + new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })); }
+    catch (e) { setSync(e && e.code === "invalid_argument" ? "Esta vista es de solo lectura." : "No se pudo guardar ahora; se guarda en este navegador."); }
+    saving = false;
+    if (dirty) flush();
+  }
+  function setSync(t) { var el = document.getElementById("sync"); if (el) el.textContent = t; }
+
+  /* ---------- Cards ---------- */
+  function allCards() {
+    var list = [];
+    Object.keys(STARTER).forEach(function (l) { STARTER[l].forEach(function (c, i) { list.push({ id: l + "-" + i, l: l, f: c[0], b: c[1] }); }); });
+    return list.concat(state.custom || []);
+  }
+  function cardState(id) { return state.cards[id] || { b: 0, d: "" }; }
+  function isDue(id) { var s = cardState(id); return !s.d || s.d <= todayKey(); }
+  var NEW_PER_DAY = 6;
+  function newToday(l) { var lg = state.log[todayKey()]; return (lg && lg.nw && lg.nw[l]) || 0; }
+  function dueCards(l) {
+    var quota = {}, out = [];
+    allCards().forEach(function (c) {
+      if (l && c.l !== l) return;
+      if (state.cards[c.id]) { if (isDue(c.id)) out.push(c); return; }
+      if (quota[c.l] === undefined) quota[c.l] = Math.max(0, NEW_PER_DAY - newToday(c.l));
+      if (quota[c.l] > 0) { quota[c.l]--; out.push(c); }
+    });
+    return out;
+  }
+
+  function speak(text, lang) {
+    try {
+      if (!window.speechSynthesis || !LANGS[lang] || !LANGS[lang].tts) return;
+      var clean = lang === "zh" ? text.split("·")[0] : text;
+      var u = new SpeechSynthesisUtterance(clean); u.lang = LANGS[lang].tts; u.rate = 0.9;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  var cardLang = "de", current = null, revealed = false;
+  function renderCardLangs() {
+    var box = document.getElementById("card-langs"); box.innerHTML = "";
+    ["de", "en", "it", "zh", "fr"].forEach(function (l) {
+      var n = dueCards(l).length;
+      var b = document.createElement("button"); b.type = "button";
+      b.setAttribute("aria-pressed", l === cardLang ? "true" : "false");
+      b.textContent = LANGS[l].name + " · " + n;
+      b.addEventListener("click", function () { cardLang = l; current = null; renderCards(); });
+      box.appendChild(b);
+    });
+  }
+  function renderCards() {
+    renderCardLangs();
+    var area = document.getElementById("card-area");
+    var due = dueCards(cardLang);
+    if (!current || !due.some(function (c) { return c.id === current.id; })) { current = due[0] || null; revealed = false; }
+    if (!current) {
+      area.innerHTML = '<div class="card"><div><div class="front">¡Al día!</div><div class="back">No te quedan tarjetas de ' + esc(LANGS[cardLang].name.toLowerCase()) + ' para hoy. Añade palabras nuevas abajo.</div></div></div>';
+      return;
+    }
+    var s = cardState(current.id);
+    area.innerHTML =
+      '<div class="card"><span class="chip c-' + current.l + ' box">Caja ' + (s.b + 1) + '/6</span><div>' +
+      '<div class="front">' + esc(current.f) + '</div>' +
+      (revealed ? '<div class="back">' + esc(current.b) + '</div>' : '') +
+      '<div style="margin-top:12px"><button class="speak" type="button" id="say" aria-label="Escuchar pronunciación">🔊 Escuchar</button></div>' +
+      '</div></div>' +
+      '<div class="card-actions">' +
+      (revealed
+        ? '<button class="btn again" type="button" id="again">Otra vez</button><button class="btn good" type="button" id="good">La sabía</button>'
+        : '<button class="btn" type="button" id="reveal">Ver significado</button>') +
+      '</div><p class="sync" style="text-align:center">' + due.length + ' pendientes de ' + esc(LANGS[cardLang].name.toLowerCase()) + '</p>';
+    document.getElementById("say").addEventListener("click", function () { speak(current.f, current.l); });
+    if (revealed) {
+      document.getElementById("again").addEventListener("click", function () { grade(false); });
+      document.getElementById("good").addEventListener("click", function () { grade(true); });
+    } else {
+      document.getElementById("reveal").addEventListener("click", function () { revealed = true; renderCards(); });
+    }
+  }
+  function grade(ok) {
+    var s = cardState(current.id);
+    if (!state.cards[current.id]) { var lgn = dayLog(todayKey()); lgn.nw = lgn.nw || {}; lgn.nw[current.l] = (lgn.nw[current.l] || 0) + 1; }
+    var b = ok ? Math.min(s.b + 1, INTERVALS.length - 1) : 0;
+    var due = ok ? todayKey(addDays(new Date(), INTERVALS[b] || 1)) : todayKey();
+    state.cards[current.id] = { b: b, d: due };
+    dayLog(todayKey()).rev = (dayLog(todayKey()).rev || 0) + 1;
+    if (!ok) { var due2 = dueCards(cardLang); if (due2.length > 1) { var idx = due2.findIndex(function (c) { return c.id === current.id; }); current = due2[(idx + 1) % due2.length]; } }
+    else current = null;
+    revealed = false;
+    save(); renderCards(); renderToday(); renderProgress();
+  }
+
+  /* ---------- Today ---------- */
+  function renderToday() {
+    var now = new Date(), k = todayKey(now), dow = now.getDay();
+    document.getElementById("today-title").textContent = DOW[dow] + ", " + now.toLocaleDateString("es-ES", { day: "numeric", month: "long" });
+    var monday = addDays(now, -((dow + 6) % 7));
+    var week = document.getElementById("week"); week.innerHTML = "";
+    for (var i = 0; i < 7; i++) {
+      var d = addDays(monday, i), dk = todayKey(d), lg = state.log[dk];
+      var el = document.createElement("div");
+      el.className = "day" + (lg && lg.done && lg.done.length ? " done" : "") + (dk === k ? " today" : "");
+      el.innerHTML = "<b>" + DOW1[d.getDay()] + "</b><span class='k'>" + d.getDate() + "</span><i></i>";
+      week.appendChild(el);
+    }
+    var box = document.getElementById("tasks"); box.innerHTML = "";
+    var lg = dayLog(k);
+    WEEK[dow].forEach(function (t, i) {
+      var id = dow + "-" + i, done = lg.done.indexOf(id) >= 0;
+      var row = document.createElement("label");
+      row.className = "task" + (done ? " is-done" : "");
+      row.innerHTML = '<input type="checkbox" id="task-' + id + '"' + (done ? " checked" : "") + '>' +
+        '<span class="t"><span class="chip c-' + t[0] + '">' + esc(LANGS[t[0]].name) + '</span><p>' + esc(t[2]) + '</p></span>' +
+        '<span class="min">' + t[1] + ' min</span>';
+      row.querySelector("input").addEventListener("change", function (e) { toggleTask(k, id, t, e.target.checked); });
+      box.appendChild(row);
+    });
+    var n = dueCards().length;
+    document.getElementById("due-notice").hidden = n === 0;
+    document.getElementById("due-text").textContent = "Tienes " + n + " tarjeta" + (n === 1 ? "" : "s") + " para repasar hoy.";
+    document.getElementById("streak").textContent = streak();
+  }
+  function toggleTask(k, id, t, on) {
+    var lg = dayLog(k);
+    var at = lg.done.indexOf(id);
+    if (on && at < 0) { lg.done.push(id); lg.min[t[0]] = (lg.min[t[0]] || 0) + t[1]; }
+    if (!on && at >= 0) { lg.done.splice(at, 1); lg.min[t[0]] = Math.max(0, (lg.min[t[0]] || 0) - t[1]); }
+    save(); renderToday(); renderProgress();
+  }
+  function studied(k) { var l = state.log[k]; return !!(l && ((l.done && l.done.length) || l.rev)); }
+  function streak() {
+    var d = new Date(), n = 0;
+    if (!studied(todayKey(d))) d = addDays(d, -1);
+    while (studied(todayKey(d)) && n < 3650) { n++; d = addDays(d, -1); }
+    return n;
+  }
+
+  /* ---------- Progress ---------- */
+  function renderProgress() {
+    var now = new Date(), monday = addDays(now, -((now.getDay() + 6) % 7));
+    var tot = {}, sum = 0;
+    for (var i = 0; i < 7; i++) {
+      var l = state.log[todayKey(addDays(monday, i))];
+      if (!l) continue;
+      Object.keys(l.min || {}).forEach(function (g) { tot[g] = (tot[g] || 0) + l.min[g]; sum += l.min[g]; });
+    }
+    document.getElementById("st-week").textContent = sum + " min";
+    document.getElementById("st-cards").textContent = Object.keys(state.cards).filter(function (id) { return state.cards[id].b >= 4; }).length;
+    document.getElementById("st-days").textContent = Object.keys(state.log).filter(studied).length;
+    var max = Math.max(60, Math.max.apply(null, Object.keys(tot).map(function (g) { return tot[g]; }).concat([0])));
+    var bars = document.getElementById("bars"); bars.innerHTML = "";
+    ["de", "en", "it", "zh", "fr", "mix", "rep"].forEach(function (g) {
+      var v = tot[g] || 0;
+      var row = document.createElement("div"); row.className = "bar c-" + g;
+      row.innerHTML = '<span style="color:var(--ink)">' + LANGS[g].name + '</span><span class="track"><span class="fill" style="display:block;width:' + Math.round(v / max * 100) + '%"></span></span><span class="v">' + v + ' min</span>';
+      bars.appendChild(row);
+    });
+  }
+
+  /* ---------- Plan ---------- */
+  function renderPlan() {
+    document.getElementById("phases").innerHTML = PHASES.map(function (p) {
+      return '<div class="phase"><span class="k">' + esc(p.k) + '</span><h3>' + esc(p.t) + '</h3><ul>' + p.items.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>";
+    }).join("");
+    document.getElementById("langs").innerHTML = ["de", "en", "it", "zh", "fr"].map(function (l) {
+      var L = LANGS[l], I = LANGINFO[l], have = CEFR.indexOf(L.level), goal = CEFR.indexOf(L.goal);
+      var scale = CEFR.map(function (c, i) { return '<span class="' + (i <= have ? "have" : "") + (i === goal ? " goal" : "") + '"><em>' + c + "</em></span>"; }).join("");
+      return '<div class="lang c-' + l + '"><div class="lang-head"><h3 style="color:var(--ink)">' + L.name + '</h3><span class="chip">' + (L.level === "—" ? "Empezar" : L.level + (L.goal !== L.level ? " → " + L.goal : "")) + '</span></div>' +
+        '<div class="cefr">' + scale + '</div>' +
+        '<p style="color:var(--ink)">' + esc(I.why) + '</p>' +
+        '<p style="color:var(--muted)"><b>Examen:</b> ' + esc(I.exam) + '</p>' +
+        '<ul style="color:var(--ink)">' + I.res.map(function (r) { return '<li><a href="' + r[1] + '" target="_blank" rel="noopener">' + esc(r[0]) + "</a></li>"; }).join("") + "</ul></div>";
+    }).join("");
+    var rows = [1, 2, 3, 4, 5, 6, 0].map(function (d) {
+      var mins = WEEK[d].reduce(function (a, t) { return a + t[1]; }, 0);
+      return "<tr><td><b>" + DOW[d] + "</b><br><span class='k'>" + mins + " min</span></td><td>" + WEEK[d].map(function (t) { return '<span class="chip c-' + t[0] + '">' + LANGS[t[0]].name + "</span> " + esc(t[2]); }).join("<br>") + "</td></tr>";
+    }).join("");
+    document.getElementById("sched").innerHTML = "<thead><tr><th>Día</th><th>Bloques</th></tr></thead><tbody>" + rows + "</tbody>";
+  }
+
+  /* ---------- Add card ---------- */
+  var addLang = document.getElementById("add-lang"), chatLang = document.getElementById("chat-lang");
+  ["de", "en", "it", "zh", "fr"].forEach(function (l) {
+    addLang.add(new Option(LANGS[l].name, l));
+    chatLang.add(new Option(LANGS[l].name + " (" + (LANGS[l].level === "—" ? "principiante" : LANGS[l].level) + ")", l));
+  });
+  document.getElementById("add-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var f = document.getElementById("add-front"), b = document.getElementById("add-back");
+    if (!f.value.trim() || !b.value.trim()) return;
+    state.custom = state.custom || [];
+    state.custom.push({ id: "c" + Date.now().toString(36), l: addLang.value, f: f.value.trim(), b: b.value.trim() });
+    f.value = ""; b.value = ""; cardLang = addLang.value; current = null;
+    save(); renderCards(); renderToday();
+  });
+
+  /* ---------- Chat with Claude ---------- */
+  var sample = null, convo = [], busy = false;
+  var chatEl = document.getElementById("chat"), statusEl = document.getElementById("chat-status");
+  function addMsg(who, text) {
+    var empty = chatEl.querySelector(".empty"); if (empty) empty.remove();
+    var m = document.createElement("div"); m.className = "msg " + who; chatEl.appendChild(m);
+    fillMsg(m, who, text); chatEl.scrollTop = chatEl.scrollHeight; return m;
+  }
+  function fillMsg(m, who, text) {
+    m.textContent = "";
+    if (who === "bot") {
+      var parts = text.split("✏️");
+      var main = document.createElement("span"); main.textContent = parts[0].trim(); m.appendChild(main);
+      if (parts[1] !== undefined) { var fx = document.createElement("span"); fx.className = "fix"; fx.textContent = "✏️ " + parts.slice(1).join("✏️").trim(); m.appendChild(fx); }
+      var sp = document.createElement("button"); sp.type = "button"; sp.className = "speak"; sp.style.marginTop = "8px"; sp.style.display = "block"; sp.textContent = "🔊 Escuchar";
+      var l = chatLang.value; sp.addEventListener("click", function () { speak(parts[0].trim(), l); }); m.appendChild(sp);
+    } else m.textContent = text;
+  }
+  function prompt() {
+    var l = chatLang.value, L = LANGS[l], scene = document.getElementById("chat-scene").value;
+    var lvl = L.level === "—" ? "principiante absoluta" : L.level;
+    var p = "Eres un tutor amable de " + L.name.toLowerCase() + " para Jaqueline, una profesional boliviana de finanzas y datos que vive en Madrid y habla español nativo. Su nivel de " + L.name.toLowerCase() + " es " + lvl + ". Situación de práctica: " + scene + ".\n" +
+      "Responde SOLO en " + L.name.toLowerCase() + ", con 1 a 3 frases sencillas adaptadas a su nivel, y termina con una pregunta para seguir la conversación." +
+      (l === "zh" ? " Escribe en caracteres y añade el pinyin entre paréntesis." : "") +
+      "\nDespués, en una línea aparte que empiece por ✏️, corrige en español los errores de su último mensaje y explica brevemente por qué; si no hay errores, escribe «✏️ ¡Perfecto!». No uses ✏️ en ningún otro sitio.\n\n";
+    if (!convo.length) return p + "Empieza tú la conversación con un saludo y una pregunta adecuada a la situación. Como Jaqueline aún no ha escrito, en la línea ✏️ pon una frase útil que pueda usar para responder.";
+    return p + "Conversación hasta ahora:\n" + convo.map(function (c) { return (c.r === "me" ? "Jaqueline: " : "Tutor: ") + c.t; }).join("\n") + "\n\nResponde al último mensaje de Jaqueline.";
+  }
+  async function ask() {
+    if (!sample || busy) return;
+    busy = true; document.getElementById("chat-send").disabled = true;
+    statusEl.textContent = "Claude está escribiendo…";
+    var m = addMsg("bot", "…");
+    try {
+      var res = await sample(prompt(), { cache: false, onText: function (ev) { fillMsg(m, "bot", ev.text || "…"); chatEl.scrollTop = chatEl.scrollHeight; } });
+      fillMsg(m, "bot", res.text); convo.push({ r: "bot", t: res.text.split("✏️")[0].trim() });
+      statusEl.textContent = "";
+    } catch (e) {
+      m.remove();
+      statusEl.textContent = e && e.code === "rate_limited" ? "Demasiados mensajes seguidos. Espera un momento y vuelve a enviar." : e && e.code === "not_granted" ? "Para practicar con Claude, permite el acceso cuando la página lo pida." : "No se pudo hablar con Claude ahora. Inténtalo de nuevo en un rato.";
+    }
+    busy = false; document.getElementById("chat-send").disabled = false;
+  }
+  document.getElementById("chat-start").addEventListener("click", function () {
+    convo = []; chatEl.innerHTML = ""; ask();
+  });
+  document.getElementById("chat-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var inp = document.getElementById("chat-input"), t = inp.value.trim();
+    if (!t || busy || !sample) return;
+    addMsg("me", t); convo.push({ r: "me", t: t }); inp.value = "";
+    ask();
+  });
+  document.getElementById("chat-input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); document.getElementById("chat-form").requestSubmit(); }
+  });
+  chatLang.addEventListener("change", function () { convo = []; chatEl.innerHTML = '<p class="empty">Pulsa «Empezar de nuevo» y Claude abre la conversación.</p>'; });
+
+  /* ---------- Routing ---------- */
+  var VIEWS = ["hoy", "tarjetas", "hablar", "plan", "progreso"];
+  function route() {
+    var v = (location.hash || "#hoy").slice(1); if (VIEWS.indexOf(v) < 0) v = "hoy";
+    VIEWS.forEach(function (x) { document.getElementById("v-" + x).hidden = x !== v; });
+    document.querySelectorAll(".tab").forEach(function (a) { if (a.dataset.view === v) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    if (v === "tarjetas") renderCards();
+  }
+  window.addEventListener("hashchange", function () { route(); window.scrollTo(0, 0); });
+
+  function renderAll() { renderToday(); renderCards(); renderProgress(); }
+
+  /* ---------- Boot ---------- */
+  loadLocal(); renderPlan(); renderAll(); route();
+  setSync("Guardado en este navegador.");
+
+  if (window.claude && window.claude.use) {
+    window.claude.use("sample").then(function (s) {
+      sample = s;
+      if (!s) { statusEl.textContent = "El chat con Claude no está disponible en esta vista."; document.getElementById("chat-send").disabled = true; document.getElementById("chat-start").disabled = true; }
+    });
+    window.claude.use("db").then(function (d) {
+      db = d; if (!db) return;
+      docRef = db.doc("progreso/jaqui");
+      var first = true;
+      var timer = setTimeout(function () { setSync("Guardado en este navegador; la cuenta tarda en responder."); }, 10000);
+      docRef.onSnapshot(function (snap) {
+        clearTimeout(timer);
+        if (snap.exists) {
+          if (!dirty && !saving) {
+            var data = snap.data() || {};
+            state.log = data.log || {}; state.cards = data.cards || {}; state.custom = data.custom || [];
+            saveLocal(); renderAll();
+          }
+          setSync("Sincronizado con tu cuenta: tu progreso se ve igual en el móvil y en el ordenador.");
+        } else if (first) {
+          if (Object.keys(state.log).length || Object.keys(state.cards).length) { dirty = true; flush(); }
+          else setSync("Sincronizado con tu cuenta.");
+        }
+        first = false;
+      }, function () { clearTimeout(timer); setSync("Guardado en este navegador."); });
+    });
+  } else {
+    statusEl.textContent = "La conversación con Claude funciona en la versión de la app dentro de Claude. Aquí tu progreso se guarda en este navegador.";
+    document.getElementById("chat-send").disabled = true; document.getElementById("chat-start").disabled = true;
+  }
+})();
+</script>
+</body></html>
